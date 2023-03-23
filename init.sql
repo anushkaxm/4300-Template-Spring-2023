@@ -1,3 +1,8 @@
+CREATE DATABASE IF NOT EXISTS drinksdb;
+
+USE drinksdb;
+DROP TABLE IF EXISTS mytable;
+
 CREATE TABLE mytable(
    FIELD1       INTEGER  NOT NULL PRIMARY KEY 
   ,drink_name   VARCHAR(47) NOT NULL
