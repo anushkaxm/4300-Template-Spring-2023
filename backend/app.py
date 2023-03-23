@@ -32,9 +32,10 @@ CORS(app)
 
 def sql_search(drink):
     # query_sql = f"""SELECT * FROM episodes WHERE LOWER( title ) LIKE '%%{episode.lower()}%%' limit 10"""
-    query_sql = f"""SELECT * FROM mytable where LOWER (drink_name) LIKE '%%{drink.lower()}%%' limit 10"""
+    query_sql = f"""SELECT * FROM mytable where LOWER( drink_name ) LIKE '%%{drink.lower()}%%' limit 5"""
     # keys = ["id","title","descr"]
-    keys = ["drink_name", "ingredients", "quantities", "instructions"]
+    keys = ["FIELD1", "drink_name", "ingredients",
+            "quantities", "instructions"]
     data = mysql_engine.query_selector(query_sql)
     return json.dumps([dict(zip(keys, i)) for i in data])
 
@@ -46,7 +47,7 @@ def home():
 
 @app.route("/drinks")
 def drinks_search():
-    text = request.args.get("title")
+    text = request.args.get("drink_name")
     return sql_search(text)
 
 
