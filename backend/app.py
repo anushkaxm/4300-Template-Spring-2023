@@ -32,28 +32,11 @@ CORS(app)
 
 def sql_search(drink):
     # query_sql = f"""SELECT * FROM episodes WHERE LOWER( title ) LIKE '%%{episode.lower()}%%' limit 10"""
-    # query_sql = f"""SELECT * FROM mytable where LOWER( drink_name ) LIKE '%%{drink.lower()}%%' limit 5"""
-    query_sql = f"""SELECT * FROM mytable"""
+    query_sql = f"""SELECT * FROM mytable where LOWER (drink_name) LIKE '%%{drink.lower()}%%' limit 10"""
     # keys = ["id","title","descr"]
-    keys = ["FIELD1", "drink_name", "ingredients",
-            "quantities", "instructions"]
+    keys = ["drink_name", "ingredients", "quantities", "instructions"]
     data = mysql_engine.query_selector(query_sql)
-    # drinks_data = json.dumps([dict(zip(keys, i)) for i in data])
-    drinks_data = [dict(zip(keys, i)) for i in data]
-    likes = drink[0]
-    dislikes = drink[1]
-    recs = []
-    for dislike in dislikes:
-        for i, drink in enumerate(drinks_data["drink_name"]):
-            if (dislike not in drinks_data["ingredients"][i]):
-                recs.append((drink, drinks_data["ingredients"][i]))
-    acc = []
-    set_likes = set(likes)
-    for rec in recs:
-        ingredients = set(recs[1])
-        if (len(set_likes.union(ingredients)) > 0):
-            acc.append(rec)
-    return acc
+    return json.dumps([dict(zip(keys, i)) for i in data])
 
 
 @app.route("/")
@@ -61,13 +44,10 @@ def home():
     return render_template('base.html', title="sample html")
 
 
-@app.route("/episodes")
+@app.route("/drinks")
 def drinks_search():
     text = request.args.get("title")
-    likes_dislikes = text.split()
-    likes = likes_dislikes[0].split(',')
-    dislikes = likes_dislikes[1].split(',')
-    return sql_search((likes, dislikes))
+    return sql_search(text)
 
 
-app.run(debug=True)
+# app.run(debug=True)
