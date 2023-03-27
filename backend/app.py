@@ -31,7 +31,6 @@ CORS(app)
 
 
 def sql_search(drink):
-    # query_sql = f"""SELECT * FROM episodes WHERE LOWER( title ) LIKE '%%{episode.lower()}%%' limit 10"""
     # query_sql = f"""SELECT * FROM mytable where LOWER( drink_name ) LIKE '%%{drink.lower()}%%' limit 5"""
     query_sql = f"""SELECT * FROM mytable"""
     keys = ["FIELD1", "drink_name", "ingredients",
@@ -53,6 +52,7 @@ def sql_search(drink):
         if (len(set_likes.union(ingredients)) > 0):
             acc.append({"drink": rec[0], "recipe": rec[1]})
     return json.dumps(acc)
+# return json.dumps({"likes": drink[0], "dislikes": drink[1]})
 
 
 @app.route("/")

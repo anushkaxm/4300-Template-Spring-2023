@@ -37,12 +37,20 @@
             </div>`
         }
 
+        function tempTemplate(data) {
+            return `<div class=''>
+                <p>${data.drink}</p>
+                <p>${data.recipe}</p>
+                </div>`
+        }
+
         function sendFocus() {
             document.getElementById('filter-text-val').focus()
         }
 
         function filterText() {
             document.getElementById("answer-box").innerHTML = ""
+<<<<<<< HEAD
             console.log([filterText1(), filterText2()])
             fetch("/episodes?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
                 .then((response) => response.json())
@@ -53,6 +61,19 @@
                     document.getElementById("answer-box").appendChild(tempDiv)
                 }));
 
+=======
+            console.log(document.getElementById("filter-text-val").value)
+            fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
+                .then((response) =>
+                    response.json())
+                .then((data) =>
+                    data.forEach(row => {
+                        console.log(row)
+                        let tempDiv = document.createElement("div")
+                        tempDiv.innerHTML = tempTemplate(row)
+                        document.getElementById("answer-box").appendChild(tempDiv)
+                    }));
+>>>>>>> 155bbea3504442fcd094cf87c2099ad4aafe0440
         }
 
     </script>
