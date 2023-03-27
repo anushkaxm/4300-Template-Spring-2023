@@ -29,13 +29,13 @@ class MySQLDatabaseHandler(object):
         conn = self.lease_connection()
         if type(query) == list:
             for i in query:
-                conn.execute(db.text(i))
+                conn.execute(i)
         else:
-            conn.execute(db.text(query))
+            conn.execute(query)
 
     def query_selector(self, query):
         conn = self.lease_connection()
-        data = conn.execute(db.text(query))
+        data = conn.execute(query)
         return data
 
     def load_file_into_db(self, file_path=None):
