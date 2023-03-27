@@ -9,7 +9,7 @@ services:
                         context: ./backend
                         dockerfile: Dockerfile
                         args:
-                                DB_NAME: fishbowls
+                                DB_NAME: drinksdb
                 depends_on:
                         - db
                 environment:
