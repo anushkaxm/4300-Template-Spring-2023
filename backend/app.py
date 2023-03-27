@@ -32,7 +32,7 @@ CORS(app)
 
 def sql_search(drink):
     # query_sql = f"""SELECT * FROM mytable where LOWER( drink_name ) LIKE '%%{drink.lower()}%%' limit 5"""
-    query_sql = f"""select * FROM drinkstable"""
+    query_sql = f"""SELECT * FROM drinks_table;"""
     keys = ["id", "drink_name", "ingredients",
             "quantities", "instructions"]
     data = mysql_engine.query_selector(query_sql)
@@ -60,7 +60,7 @@ def home():
     return render_template('base.html', title="sample html")
 
 
-@app.route("/episodes")
+@app.route("/drinks_table")
 def drinks_search():
     # text = request.args.get("text")
     # t2 = request.args.get("dislikes")
@@ -72,4 +72,4 @@ def drinks_search():
     return sql_search((likes, dislikes))
 
 
-app.run(debug=True)
+# app.run(debug=True)
