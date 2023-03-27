@@ -1,4 +1,4 @@
-.full-body-container {
+html {
     position: absolute;
     top: 0;
     left: 0;
@@ -16,7 +16,7 @@
 h1 {
     font-size: 5em;
     font-family: 'Apple Chancery', cursive;
-    color: #2A292B;
+    color: whitesmoke;
 }
 
 .button {
@@ -67,8 +67,10 @@ h1 {
 
 .episode-title {
     font-family: 'Kanit', sans-serif;
+    color: white
 }
 
 .episode-desc {
     font-family: 'Montserrat', sans-serif;
+    color: whitesmoke
 }
