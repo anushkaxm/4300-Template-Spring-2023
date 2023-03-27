@@ -62,13 +62,14 @@ def home():
 
 @app.route("/drinks_table")
 def drinks_search():
-    # text = request.args.get("text")
+    text = request.args.get("title")
     # t2 = request.args.get("dislikes")
-    # likes_dislikes = text.split()
-    # likes = likes_dislikes[0].split(',')
-    # dislikes = likes_dislikes[1].split(',')
-    likes = request.args.get("likes")
-    dislikes = request.args.get("dislikes")
+    likes_dislikes = text.split()
+    likes = likes_dislikes[0].split(',')
+    dislikes = likes_dislikes[1].split(',')
+    # likes = request.args.get("likes")
+    # dislikes = request.args.get("dislikes")
+    print(likes, dislikes)
     return sql_search((likes, dislikes))
 
 
