@@ -12,13 +12,15 @@
             <div class="drinks-title">
                 <h1 id="title">🍸 Recs on the Rocks!</h1>
             </div>
-            <div class="input-box" onclick="sendFocus()">
+            <div class="input-box">
                 <img src="{{ url_for('static', filename='images/cocktail.png') }}" />
-                <input placeholder="Likes" id="filter-text-val" onkeyup="filterText()">
+                <input placeholder="Likes" id="filter-text-likes">
             </div>
-            <div class="input-box" onclick="sendFocus()">
+            <div class="input-box">
                 <img src="{{ url_for('static', filename='images/cocktail.png') }}" />
-                <input placeholder="Dislikes" id="filter-text-val" onkeyup="filterText()">
+                <input placeholder="Dislikes" id="filter-text-dislikes">
+            </div>
+            <div class="button"> <button id="Submit" onclick="filterText()">Get my drinks!</button>
             </div>
         </div>
         <div id="answer-box">
@@ -41,8 +43,8 @@
 
         function filterText() {
             document.getElementById("answer-box").innerHTML = ""
-            console.log(document.getElementById("filter-text-val").value)
-            fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
+            console.log([filterText1(), filterText2()])
+            fetch("/episodes?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
                 .then((response) => response.json())
                 .then((data) => data.forEach(row => {
 

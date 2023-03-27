@@ -19,6 +19,16 @@ h1 {
     color: #2A292B;
 }
 
+.button {
+    transition-duration: 0.4s;
+}
+
+.button:hover {
+    background-color: #4CAF50;
+    /* Green */
+    color: aliceblue;
+}
+
 .input-box {
     border-radius: 50px;
     border: 1px solid black;
