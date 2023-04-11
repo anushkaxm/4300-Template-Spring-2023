@@ -33,9 +33,11 @@ CORS(app)
 def sql_search(likes, dislikes):
     # query_sql = f"""SELECT * FROM mytable where LOWER( drink_name ) LIKE '%%{drink.lower()}%%' limit 5"""
     query_sql = f"""SELECT * FROM drinks_table;"""
-    keys = ["id", "drink_name", "ingredients1", "ingredients2", "ingredient3",
-            "ingredients4", "ingredients5", "ingredient6", "ingredients7", "ingredients8", "ingredient9",
-            "ingredients10", "ingredients11", "ingredient12"]
+    keys = ["id", "drink_name", "instructions", "picture", "tags", "ingredients1", "quantity1", "ingredients2", 
+    "quantity2", "ingredients3", "quantity3", "ingredients4", "quantity4", "ingredients5", "quantity5",
+    "ingredients6", "quantity6", "ingredients7", "quantity7", "ingredients8", "quantity8", "ingredients9",
+    "quantity9", "ingredients10", "quantity10", "ingredients11", "quantity11", "ingredients12", "quantity12"]
+    
     data = mysql_engine.query_selector(query_sql)
     # drinks_data = json.dumps([dict(zip(keys, i)) for i in data])
     drinks_data = [dict(zip(keys, i)) for i in data]
@@ -44,21 +46,25 @@ def sql_search(likes, dislikes):
     recs = []
     for dislike in dislikes:
         for dic in drinks_data[1:]:
-            curr_ingredients = [dic["ingredients1"], dic["ingredients2"], dic["ingredient3"], dic["ingredients4"], dic["ingredients5"], dic["ingredient6"],
-                                dic["ingredients7"], dic["ingredients8"], dic["ingredient9"], dic["ingredients10"], dic["ingredients11"], dic["ingredient12"]]
+            curr_ingredients = [dic["ingredients1"], dic["ingredients2"], dic["ingredients3"], dic["ingredients4"], dic["ingredients5"], dic["ingredients6"],
+                                dic["ingredients7"], dic["ingredients8"], dic["ingredients9"], dic["ingredients10"], dic["ingredients11"], dic["ingredients12"]]
             if (dislike not in curr_ingredients):
-                recs.append((dic["drink_name"], curr_ingredients))
+                recs.append((dic["drink_name"], curr_ingredients, dic['picture'], dic['instructions']))
+    #print("recs", recs[:2])
     acc = []
-    if likes == []:  # user inputs no likes
+    if likes == ['']:  # user inputs no likes
         for rec in recs:
-            acc.append({'drink': rec[0], 'ingredients': ' '.join(rec[1])})
+            print("rec", rec)
+            acc.append({'drink': rec[0], 'ingredients': ' '.join(rec[1]), 'picture': rec[2], 'instructions': rec[3]})
     else:
         set_likes = set(likes)
         ingredients = set()
         for rec in recs:
             ingredients = set(rec[1])
             if (len(set_likes.intersection(ingredients)) > 0):
-                acc.append({"drink": rec[0], "ingredients": ' '.join(rec[1])})
+                acc.append({"drink": rec[0], "ingredients": ' '.join(rec[1]), 'picture': rec[2], 'instructions': rec[3]})
+    #print("here", json.dumps(acc[:5]))
+    print("acc", acc[:5])
     return json.dumps(acc[:5])
 # return json.dumps({"likes": drink[0], "dislikes": drink[1]})
 
@@ -77,6 +83,8 @@ def drinks_search():
     dislikes = request.args.get("dislikes")
     likes_list = likes.split(',')
     dislikes_list = dislikes.split(',')
+    likes_list = [x.strip() for x in likes_list]
+    dislikes_list = [x.strip() for x in dislikes_list]
     print(likes_list, dislikes_list)
     return sql_search(likes_list, dislikes_list)
 
