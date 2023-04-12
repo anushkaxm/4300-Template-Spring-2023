@@ -30,7 +30,7 @@
     </div>
 
     <script>
-
+        var current_tags = {}
         function answerBoxTemplate(title, titleDesc) {
             return `<div class=''>
                 <h3 class='episode-title'>${title}</h3>
@@ -38,15 +38,26 @@
             </div>`
         }
 
-        function tempTemplate(data) {
+        function tempTemplate(data, current_rec) {
+            console.log("data", data)
+            current_tags[current_rec] = (data.drink, data.tags)
             return `<div class='answer-box'>
                 <h3 class='drink-title'>${data.drink}</h3>
                 <p class='drink-desc'>${data.ingredients}</p>
                 <img src=${data.picture} style="width: 75px; height: 75px;">
-                <img src="/static/images/thumbs_up.png" style="width: 50px; height: 50px;"/>
-                <img src="/static/images/thumbs_down.png" style="width: 50px; height: 50px;"/>
+                <img id = ${current_rec}_up onclick="reactClick(this.id)" src="/static/images/thumbs_up.png" style="width: 50px; height: 50px;"/>
+                <img id = ${current_rec}_down onclick="reactClick(this.id)" src="/static/images/thumbs_down.png" style="width: 50px; height: 50px;"/>
                 </div>`
             //                <p class='drink-desc'>${data.instructions}</p>
+        }
+
+        function reactClick(id) {
+            console.log("clicked here!")
+            split_id = id.split("_")
+            current_rec = split_id[0]
+            likes = split_id[1] == 'up'
+            console.log("tags", current_tags[current_rec], likes)
+            document.getElementById(id).style.border = "2px solid orange";
         }
 
         function sendFocus() {
@@ -55,7 +66,7 @@
 
         function filterText() {
             document.getElementsByClassName('outer').innerHTML = ""
-            //console.log(document.getElementById("filter-text-val").value)
+            current_rec = 0
             fetch("/drinks_table?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
                 .then((response) =>
                     response.json())
@@ -63,7 +74,8 @@
                     data.forEach(row => {
                         console.log(row)
                         let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = tempTemplate(row)
+                        tempDiv.innerHTML = tempTemplate(row, current_rec)
+                        current_rec += 1
                         document.getElementsByClassName('outer')[0].appendChild(tempDiv)
                     }));
         }

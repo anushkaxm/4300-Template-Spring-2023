@@ -1,11 +1,79 @@
-FROM python:3.7-slim
+version: '3.8'
 
-ENV CONTAINER_HOME=/var/www
+services:
 
-ADD . $CONTAINER_HOME
-WORKDIR $CONTAINER_HOME
+        backend_flask_app:
 
-ARG DB_NAME
-ENV DB_NAME $DB_NAME
+                container_name: ${TEAM_NAME}_backend_app
 
-RUN pip install -r $CONTAINER_HOME/requirements.txt
+                ports:
+
+                        - 0.0.0.0:${APP_PORT}:5000
+
+                restart: always
+
+                build:
+
+                        context: ./backend
+
+                        dockerfile: Dockerfile
+
+                        args:
+
+                                DB_NAME: ${TEAM_NAME}
+
+                depends_on:
+
+                        - db
+
+                environment:
+
+                        - FLASK_APP=app.py
+
+                        - FLASK_RUN_HOST=0.0.0.0
+
+                        - FLASK_DEBUG=0
+
+                networks:
+
+                        flask_network:
+
+                                aliases:
+
+                                        - flask-network
+
+                command: gunicorn --bind 0.0.0.0:5000 --workers 4 "app:app"
+
+        db:
+
+                container_name: ${TEAM_NAME}_db
+
+                image: mysql:latest
+
+                restart: always
+
+                environment:
+
+                        MYSQL_USER: admin
+
+                        MYSQL_PASSWORD: admin
+
+                        MYSQL_DATABASE: drinksdb
+
+                        MYSQL_ROOT_PASSWORD: admin
+
+                volumes:
+
+                        - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+                networks:
+
+                        - flask_network
+
+volumes:
+
+        flask_volume:
+
+networks:
+
+        flask_network:
