@@ -23,9 +23,10 @@
             <div class="button"> <button id="Submit" onclick="filterText()">Get my drinks!</button>
             </div>
         </div>
-        <div id="answer-box">
 
+        <div class="outer">
         </div>
+
     </div>
 
     <script>
@@ -38,12 +39,14 @@
         }
 
         function tempTemplate(data) {
-            return `<div class=''>
-                <h3 class='episode-title'>${data.drink}</h3>
-                <p class='episode-desc'>${data.ingredients}</p>
-                <p class='episode-desc'>${data.instructions}</p>
+            return `<div class='answer-box'>
+                <h3 class='drink-title'>${data.drink}</h3>
+                <p class='drink-desc'>${data.ingredients}</p>
                 <img src=${data.picture} style="width: 75px; height: 75px;">
+                <img src="/static/images/thumbs_up.png" style="width: 50px; height: 50px;"/>
+                <img src="/static/images/thumbs_down.png" style="width: 50px; height: 50px;"/>
                 </div>`
+            //                <p class='drink-desc'>${data.instructions}</p>
         }
 
         function sendFocus() {
@@ -51,7 +54,7 @@
         }
 
         function filterText() {
-            document.getElementById("answer-box").innerHTML = ""
+            document.getElementsByClassName('outer').innerHTML = ""
             //console.log(document.getElementById("filter-text-val").value)
             fetch("/drinks_table?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
                 .then((response) =>
@@ -61,11 +64,8 @@
                         console.log(row)
                         let tempDiv = document.createElement("div")
                         tempDiv.innerHTML = tempTemplate(row)
-                        //console.log(row)
-                        document.getElementById("answer-box").appendChild(tempDiv)
+                        document.getElementsByClassName('outer')[0].appendChild(tempDiv)
                     }));
-            //console.log("q")
         }
-
     </script>
 </body>

@@ -60,17 +60,27 @@ h1 {
     background-color: aliceblue;
 }
 
-#answer-box {
+.outer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+    border: 1px solid black;
     width: 700px;
-    margin-top: 50px;
 }
 
-.episode-title {
+.answer-box {
+    margin: 10px;
+    border: 1px solid rgb(100, 26, 26);
+    text-align: center;
+}
+
+
+.drink-title {
     font-family: 'Kanit', sans-serif;
     color: white
 }
 
-.episode-desc {
+.drink-desc {
     font-family: 'Montserrat', sans-serif;
     color: whitesmoke
 }
