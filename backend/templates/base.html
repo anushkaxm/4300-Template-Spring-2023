@@ -43,11 +43,11 @@
     </div>
 
     <script>
-        var current_tags = {}
+        var current_reacts = {}
 
         function drinkTemplate(data, current_rec) {
             console.log("data", data)
-            current_tags[current_rec] = (data.drink, data.tags)
+            current_reacts[current_rec] = [data.drink, data.tags, data.ingredients]
             return `<div class='answer-box'>
                 <div class='drink-body'>
                     <img src=${data.picture} style="width: 40%; height: 40%; float: left;">
@@ -75,8 +75,24 @@
             split_id = id.split("_")
             current_rec = split_id[0]
             likes = split_id[1] == 'up'
-            console.log("tags", current_tags[current_rec], likes)
+            console.log("tags", current_reacts)
             document.getElementById(id).style.border = "2px solid orange";
+            var paras = document.getElementsByClassName('answer-box');
+            while (paras[0]) {
+                paras[0].parentNode.removeChild(paras[0]);
+            }
+            document.getElementsByClassName('outer').innerHTML = ""
+            fetch("/rocchio?" + new URLSearchParams({ tags: current_reacts[current_rec][1], likes: likes, drink: current_reacts[current_rec][0], ingrs: current_reacts[current_rec][2] }).toString())
+                .then((response) =>
+                    response.json())
+                .then((data) =>
+                    data.forEach(row => {
+                        console.log(row)
+                        let tempDiv = document.createElement("div")
+                        tempDiv.innerHTML = tempTemplate(row, current_rec)
+                        current_rec += 1
+                        document.getElementsByClassName('outer')[0].appendChild(tempDiv)
+                    }));
         }
 
         function sendFocus() {
