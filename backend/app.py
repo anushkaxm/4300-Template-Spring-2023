@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
-from buildrecs import closest_projects
+from buildrecs import closest_projects, vect, read_data
 from collections import defaultdict
 from csv import DictReader
 
@@ -15,7 +15,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""  # password"
+MYSQL_USER_PASSWORD = ""  # "password"  # password"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -26,6 +26,7 @@ mysql_engine = MySQLDatabaseHandler(
 mysql_engine.load_file_into_db()
 
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 CORS(app)
 
 # Sample search, the LIKE operator in this case is hard-coded,
@@ -103,6 +104,9 @@ def sql_search(likes, dislikes):
     # likes = drink[0]
     # dislikes = drink[1]
 
+    projects_repr_in = vect(drinks_data)
+    documents = read_data(drinks_data)
+
     recs = []
     for dic in drinks_data[1:]:
         found_dislike = False
@@ -134,19 +138,21 @@ def sql_search(likes, dislikes):
     for i in acc:
         project_index_in = i['id']
         highest_sim = []
-        for tup in closest_projects(project_index_in, drinks_data):
+        for tup in closest_projects(project_index_in, projects_repr_in, documents):
             highest_sim.append(tuple(tup))
         highest_sim.sort(key=lambda x: x[1], reverse=True)
 
         # highest_sim is the list of drinks and their sim score
-    print(highest_sim)
+    # print(highest_sim)
 
     inverted_idx = build_inverted_index()
     result = []
-    for i, j in highest_sim[:6]:
+    for i, j in highest_sim[:7]:
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3]})
 
+    # return json.dumps(acc[:6])
+    print(result)
     return json.dumps(result)
 
 

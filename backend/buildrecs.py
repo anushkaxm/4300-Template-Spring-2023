@@ -43,10 +43,9 @@ def vect(rec):
     return docs_compressed_normed
 
 
-def closest_projects(project_index_in, rec):
+def closest_projects(project_index_in, project_repr_in, documents):
     k = 5
-    project_repr_in = vect(rec)
-    documents = read_data(rec)
     sims = project_repr_in.dot(project_repr_in[project_index_in, :])
     asort = np.argsort(-sims)[:k+1]
+    print(asort)
     return [(documents[i][0], sims[i]) for i in asort[1:]]
