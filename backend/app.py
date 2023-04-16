@@ -30,10 +30,15 @@ CORS(app)
 # there's a much better and cleaner way to do this
 
 
+feedback_likes = {}
+feedback_dislikes = {}
+input_likes = []
+input_dislikes = []
+
 def sql_search(likes, dislikes):
     # query_sql = f"""SELECT * FROM mytable where LOWER( drink_name ) LIKE '%%{drink.lower()}%%' limit 5"""
     query_sql = f"""SELECT * FROM drinks_table;"""
-    keys = ["id", "drink_name", "instructions", "picture", "tags", "ingredients1", "quantity1", "ingredients2", 
+    keys = ["id", "drink_name", "instructions", "steps", "picture", "tags", "ingredients1", "quantity1", "ingredients2", 
     "quantity2", "ingredients3", "quantity3", "ingredients4", "quantity4", "ingredients5", "quantity5",
     "ingredients6", "quantity6", "ingredients7", "quantity7", "ingredients8", "quantity8", "ingredients9",
     "quantity9", "ingredients10", "quantity10", "ingredients11", "quantity11", "ingredients12", "quantity12"]
@@ -71,7 +76,7 @@ def sql_search(likes, dislikes):
             ingredients = set(rec[1])
             if (len(set_likes.intersection(ingredients)) > 0):
                 acc.append({"drink": rec[0], "ingredients": ', '.join(rec[1]), 'picture': rec[2], 'instructions': rec[3], 'tags': rec[4]})
-
+    print(acc[:6], "type", type(acc))
     return json.dumps(acc[:6])
 # return json.dumps({"likes": drink[0], "dislikes": drink[1]})
 
@@ -86,15 +91,71 @@ def drinks_search():
     # text = request.args.get("title")
     # t2 = request.args.get("dislikes")
     # likes_dislikes = text.split()
+    global input_likes, input_dislikes
     likes = request.args.get("likes")
     dislikes = request.args.get("dislikes")
     likes_list = likes.split(',')
     dislikes_list = dislikes.split(',')
     likes_list = [x.strip() for x in likes_list]
     dislikes_list = [x.strip() for x in dislikes_list]
-    print(likes_list, dislikes_list)
+    input_likes = likes_list
+    input_dislikes = dislikes_list
 
     return sql_search(likes_list, dislikes_list)
 
+@ app.route("/rocchio")
+def rocchio_search():
+    global feedback_likes, feedback_dislikes, input_likes, input_dislikes
+    tags = request.args.get("tags").split(" ")
+    likes = request.args.get("likes")
+    drink_name = request.args.get("drink")
+    ingredients = request.args.get("ingrs").split(", ")
+    if likes == 'true': 
+        feedback_likes[drink_name] = [tags, ingredients]
+    if likes == 'false': 
+        feedback_dislikes[drink_name] = [tags, ingredients]
 
+    alpha = 1
+    beta = 1.25
+    gamma = 1.75
+    new_query_dict = {}
+    #print("inputs", input_likes, input_dislikes)
+    feedback_liked_ingrs = []
+    for val in feedback_likes.values():
+        for ingr in val[1]:
+            feedback_liked_ingrs.append(ingr)
+            new_query_dict[ingr] = 0
+    feedback_disliked_ingrs = []
+    for val in feedback_dislikes.values():
+        for ingr in val[1]:
+            feedback_disliked_ingrs.append(ingr)
+            new_query_dict[ingr] = 0
+    
+    # alpha part of rocchio computation
+    for ingr in input_likes:
+        new_query_dict[ingr] = alpha
+    for ingr in input_dislikes:
+        new_query_dict[ingr] = -1 * alpha
+
+    # beta part of rocchio computation
+    total_rel_drinks = len(feedback_likes) + 1
+    for ingr in feedback_liked_ingrs:
+        new_query_dict[ingr] += beta * (1/total_rel_drinks)
+    # gamma part of rocchio computation
+    total_nonrel_drinks = len(feedback_dislikes) + 1
+    for ingr in feedback_disliked_ingrs:
+        new_query_dict[ingr] -= gamma * (1/total_nonrel_drinks)
+    
+    new_feedback_liked_ingr = []
+    new_feedback_disliked_ingr = []
+    for ingr in new_query_dict:
+        if new_query_dict[ingr] > 0:
+            for _ in range(round(new_query_dict[ingr])):
+                new_feedback_liked_ingr.append(ingr)
+        if new_query_dict[ingr] < 0:
+            for _ in range(round(new_query_dict[ingr])):
+                new_feedback_liked_ingr.append(ingr)
+            new_feedback_disliked_ingr.append(ingr)
+    print(new_feedback_liked_ingr, new_feedback_disliked_ingr)
+    return sql_search(new_feedback_liked_ingr, new_feedback_disliked_ingr)
 # app.run(debug=True)
