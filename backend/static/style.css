@@ -10,45 +10,77 @@ html {
     justify-content: start;
     align-items: center;
     flex-direction: column;
-    background-color: #9B2C3B;
+    background-color: #d0b0ae;
+}
+
+/* title styling */
+.drinks-title {
+    margin:auto;
+    display:flex; 
+    flex-direction: row;  
 }
 
 h1 {
-    font-size: 5em;
-    font-family: 'Apple Chancery', cursive;
-    color: whitesmoke;
+    margin:0px;
+    font-style:italic;
+    font-family: 'Source Sans Pro';
+    font-weight:lighter;
+    color: #752e3e;
+    
 }
 
-.button {
-    transition-duration: 0.4s;
+h2 {
+    font-size: 0.9em;
+    padding-left: 10px;
+    font-family: 'Source Sans Pro';
+    /* font-weight: revert; */
+    font-weight: lighter;
+    /* font-style: italic; */
+    margin-bottom: 0;
+    padding-top: 5px;
+    color: #752e3e;
 }
 
-.button:hover {
-    background-color: #4CAF50;
-    /* Green */
-    color: aliceblue;
+.svg-inline--fa{
+    height: 1.5em;
+    margin:8px;
+}
+/* end title styling */
+
+ /* form elements styling */
+#Submit{
+    margin-top:10px;
+    background-color:#c16270;
+    color:#f1efea;
+    padding: 8px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Source Sans Pro';
+    font-weight:lighter;
+    padding-left:25px;
+    padding-right:25px;
+}
+
+#Submit:hover{
+    background-color: #752e3e;
+    color: #f1efea;
 }
 
 .input-box {
-    border-radius: 50px;
-    border: 1px solid black;
+    border-radius: 15px;
+    border: 1px solid #7c7b7c;
     display: flex;
     align-items: center;
-    margin-top: 10px;
+    margin-top: 20px;
+    margin-bottom: 10px;
     padding: 12px;
     width: 600px;
-    background-color: aliceblue;
+    background-color: #ece5df;
 }
 
 .input-box img {
     height: 20px;
     width: 20px;
-}
-
-.top-text {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 .input-box input {
@@ -57,30 +89,114 @@ h1 {
     font-size: 16px;
     border: none;
     outline: 0;
-    background-color: aliceblue;
+    background-color: #ece5df;
+    font-family: 'Source Sans Pro';
+    color: #666666;
+}
+/* end form elements styling */
+
+
+.full-body-container{
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.outer {
+.form-container{
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 20px;
+    padding: 15px;
+    background-color: #f1efea;
+    position:relative;
+}
+
+.results-container{
+    display: flex;
+    position: relative;
+    align-items: center;
+    margin-top:10px;
+}
+
+.results {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 20px;
-    border: 1px solid black;
     width: 700px;
 }
 
+.drink-body{
+    display:flex;
+    vertical-align:middle;
+}
+
 .answer-box {
-    margin: 10px;
-    border: 1px solid rgb(100, 26, 26);
+    margin-top: 10px;
+    margin-left:5px;
+    border-radius: 10px;
     text-align: center;
+    color: #7c7b7c;
+    padding: 18px;
+    background-color: #f1efea;
+    font-family: 'Source Sans Pro';
+    width: 175px;
+    height: 175px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-
-.drink-title {
-    font-family: 'Kanit', sans-serif;
-    color: white
+.details:hover{
+    color: #c16270;
 }
 
-.drink-desc {
-    font-family: 'Montserrat', sans-serif;
-    color: whitesmoke
-}
+/* Modal code. Adapted from https://www.w3schools.com/howto/howto_css_modals.asp */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content/Box */
+  .modal-content {
+    border-radius: 10px;
+    background-color: #e9e6df;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    width: 30%; /* Could be more or less, depending on screen size */
+    font-family: 'Source Sans Pro';
+    color:#7c7b7c;
+  }
+  
+  /* The Close Button */
+  .close {
+    color: #7c7b7c;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* End modal code */
+
