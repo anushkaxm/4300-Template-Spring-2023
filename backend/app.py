@@ -147,10 +147,7 @@ def sql_search(likes, dislikes):
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3]})
 
-    # return json.dumps(acc[:6])
     return json.dumps(result)
-
-# return json.dumps({"likes": drink[0], "dislikes": drink[1]})
 
 
 @ app.route("/")
@@ -160,9 +157,6 @@ def home():
 
 @ app.route("/drinks_table")
 def drinks_search():
-    # text = request.args.get("title")
-    # t2 = request.args.get("dislikes")
-    # likes_dislikes = text.split()
     global input_likes, input_dislikes
     likes = request.args.get("likes")
     dislikes = request.args.get("dislikes")
