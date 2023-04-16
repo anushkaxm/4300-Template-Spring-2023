@@ -56,10 +56,40 @@ def build_inverted_index():
     return documents
 
 
+feedback_likes = {}
+feedback_dislikes = {}
+input_likes = []
+input_dislikes = []
+
+feedback_likes = {}
+feedback_dislikes = {}
+input_likes = []
+input_dislikes = []
+
+
+def build_inverted_index():
+    with open("../tags.csv", 'r') as f:
+
+        dict_reader = DictReader(f)
+        documents = defaultdict(list)
+        for x in dict_reader:
+
+            ingredient_list = x['ingredients1']+"," + x['ingredients2']+","+x['ingredients3']+","+x['ingredients4']+","+x['ingredients5']+","+x['ingredients6'] + \
+                ","+x['ingredients7']+","+x['ingredients8']+","+x['ingredients9'] + \
+                ","+x['ingredients10']+"," + \
+                x['ingredients11']+","+x['ingredients12']
+
+            documents[x['drink_name']].append(
+                (ingredient_list.rstrip(','), x["instructions"], x["picture"], x["tags"]))
+
+    return documents
+
+
 def sql_search(likes, dislikes):
     # query_sql = f"""SELECT * FROM mytable where LOWER( drink_name ) LIKE '%%{drink.lower()}%%' limit 5"""
     query_sql = f"""SELECT * FROM drinks_table;"""
-    keys = ["id", "drink_name", "instructions", "picture", "tags", "ingredients1", "quantity1", "ingredients2",
+
+    keys = ["id", "drink_name", "instructions", "steps", "picture", "tags", "ingredients1", "quantity1", "ingredients2",
             "quantity2", "ingredients3", "quantity3", "ingredients4", "quantity4", "ingredients5", "quantity5",
             "ingredients6", "quantity6", "ingredients7", "quantity7", "ingredients8", "quantity8", "ingredients9",
             "quantity9", "ingredients10", "quantity10", "ingredients11", "quantity11", "ingredients12", "quantity12"]
@@ -97,6 +127,7 @@ def sql_search(likes, dislikes):
         for rec in recs:
             ingredients = set(rec[2])
             if (len(set_likes.intersection(ingredients)) > 0):
+
                 acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
                     rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
 
@@ -118,6 +149,7 @@ def sql_search(likes, dislikes):
 
     # return json.dumps(acc[:6])
     return json.dumps(result)
+
 # return json.dumps({"likes": drink[0], "dislikes": drink[1]})
 
 
@@ -140,6 +172,7 @@ def drinks_search():
     dislikes_list = [x.strip() for x in dislikes_list]
     input_likes = likes_list
     input_dislikes = dislikes_list
+
     print("FEEDBACK DISLIKES: ")
     print(feedback_dislikes)
     print()
@@ -205,6 +238,4 @@ def rocchio_search():
             new_feedback_disliked_ingr.append(ingr)
     print(new_feedback_liked_ingr, new_feedback_disliked_ingr)
     return sql_search(new_feedback_liked_ingr, new_feedback_disliked_ingr)
-
-
 # app.run(debug=True)

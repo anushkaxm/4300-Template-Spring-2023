@@ -88,7 +88,6 @@
                     response.json())
                 .then((data) =>
                     data.forEach(row => {
-                        console.log(row)
                         let tempDiv = document.createElement("div")
                         tempDiv.innerHTML = tempTemplate(row, current_rec)
                         current_rec += 1
