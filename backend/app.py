@@ -134,10 +134,14 @@ def sql_search(likes, dislikes):
                 acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
                     rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
     highest_sim = []
+    drink_sim = []
     for i in acc:
         project_index_in = i['id']
         for tup in closest_projects(project_index_in, projects_repr_in, documents):
-            highest_sim.append(tuple(tup))
+            drink = tup[0]
+            if (drink not in drink_sim):
+                highest_sim.append(tuple(tup))
+                drink_sim.append(drink)
         highest_sim.sort(key=lambda x: x[1], reverse=True)
 
         # highest_sim is the list of drinks and their sim score
