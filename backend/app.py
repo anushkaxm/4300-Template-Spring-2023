@@ -15,7 +15,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "password"  # password"
+MYSQL_USER_PASSWORD = ""  # "password"  # password"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -99,27 +99,38 @@ def sql_search(likes, dislikes):
                  "ingredients8", "ingredients9", "ingredients10", "ingredients11", "ingredients12"]
 
     data = mysql_engine.query_selector(query_sql)
-    # drinks_data = json.dumps([dict(zip(keys, i)) for i in data])
+
     drinks_data = [dict(zip(keys, i)) for i in data]
-    # likes = drink[0]
-    # dislikes = drink[1]
 
     projects_repr_in = vect(drinks_data[1:])
     documents = read_data(drinks_data[1:])
 
     recs = []
-    for dic in drinks_data[1:]:
-        found_dislike = False
-        for dislike in dislikes:
-            curr_ingredients = []
-            for col in ingr_cols:
-                if dic[col] and dic[col] != "":
-                    curr_ingredients.append(dic[col])
-                    if dislike in dic[col]:
-                        found_dislike = True
-        if found_dislike == False:
-            recs.append((dic["id"], dic["drink_name"], curr_ingredients,
-                        dic['picture'], dic['instructions'], dic['tags']))
+    empty_dislikes = False
+    if (dislikes == ['']):
+        empty_dislikes = True
+    if (empty_dislikes):
+        for x in drinks_data[1:]:
+            ingredient_list = x['ingredients1']+" " + x['ingredients2']+" "+x['ingredients3']+" "+x['ingredients4']+" "+x['ingredients5']+" "+x['ingredients6'] + \
+                " "+x['ingredients7']+" "+x['ingredients8']+" "+x['ingredients9'] + \
+                " "+x['ingredients10']+" " + \
+                x['ingredients11']+" "+x['ingredients12']
+
+            recs.append((x["id"], x['drink_name'], ingredient_list.strip(
+            ), x['picture'], x['instructions'], x['tags']))
+    else:
+        for dic in drinks_data[1:]:
+            found_dislike = False
+            for dislike in dislikes:
+                curr_ingredients = []
+                for col in ingr_cols:
+                    if dic[col] and dic[col] != "":
+                        curr_ingredients.append(dic[col])
+                        if dislike in dic[col]:
+                            found_dislike = True
+            if found_dislike == False:
+                recs.append((dic["id"], dic["drink_name"], curr_ingredients,
+                            dic['picture'], dic['instructions'], dic['tags']))
     acc = []
     if likes == ['']:  # user inputs no likes
         for rec in recs:
@@ -127,9 +138,10 @@ def sql_search(likes, dislikes):
                 rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
     else:
         set_likes = set(likes)
-        ingredients = set()
+        # ingredients = set()
         for rec in recs:
-            ingredients = set(rec[2])
+            ingredients = set(rec[2].split(' '))
+            # print(ingredients)
             if (len(set_likes.intersection(ingredients)) > 0):
                 acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
                     rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
@@ -152,8 +164,6 @@ def sql_search(likes, dislikes):
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3]})
 
-    # return json.dumps(acc[:6])
-    #print(result)
     return json.dumps(result)
 
 
@@ -189,7 +199,7 @@ def rocchio_search():
     if likes == 'false':
         feedback_dislikes[drink_name] = [tags, ingredients]
 
-    #print("feedback", feedback_likes, feedback_dislikes)
+    # print("feedback", feedback_likes, feedback_dislikes)
     alpha = 1
     beta = 1.25
     gamma = 1.75
