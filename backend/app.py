@@ -15,7 +15,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""  # "password"  # password"
+MYSQL_USER_PASSWORD = "password"  # password"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -153,7 +153,7 @@ def sql_search(likes, dislikes):
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3]})
 
     # return json.dumps(acc[:6])
-    print(result)
+    #print(result)
     return json.dumps(result)
 
 
@@ -182,12 +182,14 @@ def rocchio_search():
     tags = request.args.get("tags").split(" ")
     likes = request.args.get("likes")
     drink_name = request.args.get("drink")
-    ingredients = request.args.get("ingrs").split(", ")
+    ingredients = request.args.get("ingrs").split(",")
+
     if likes == 'true':
         feedback_likes[drink_name] = [tags, ingredients]
     if likes == 'false':
         feedback_dislikes[drink_name] = [tags, ingredients]
 
+    #print("feedback", feedback_likes, feedback_dislikes)
     alpha = 1
     beta = 1.25
     gamma = 1.75
@@ -229,6 +231,6 @@ def rocchio_search():
             for _ in range(round(new_query_dict[ingr])):
                 new_feedback_liked_ingr.append(ingr)
             new_feedback_disliked_ingr.append(ingr)
-    print(new_feedback_liked_ingr, new_feedback_disliked_ingr)
+    print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
     return sql_search(new_feedback_liked_ingr, new_feedback_disliked_ingr)
 # app.run(debug=True)

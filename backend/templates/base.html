@@ -46,7 +46,6 @@
         var current_reacts = {}
 
         function drinkTemplate(data, current_rec) {
-            console.log("data", data)
             current_reacts[current_rec] = [data.drink, data.tags, data.ingredients]
             return `<div class='answer-box'>
                 <div class='drink-body'>
@@ -75,27 +74,24 @@
         }
 
         function reactClick(id) {
-            console.log("clicked here!")
             split_id = id.split("_")
-            current_rec = split_id[0]
+            selected_rec = split_id[0]
             likes = split_id[1] == 'up'
-            console.log("tags", current_reacts)
             document.getElementById(id).style.border = "2px solid orange";
-            var paras = document.getElementsByClassName('answer-box');
-            while (paras[0]) {
-                paras[0].parentNode.removeChild(paras[0]);
-            }
-            document.getElementsByClassName('outer').innerHTML = ""
-            fetch("/rocchio?" + new URLSearchParams({ tags: current_reacts[current_rec][1], likes: likes, drink: current_reacts[current_rec][0], ingrs: current_reacts[current_rec][2] }).toString())
+            document.getElementsByClassName('results')[0].innerHTML = "";
+            current_rec = 0
+            old_reacts = current_reacts
+            current_reacts = {}
+            closeModal()
+            fetch("/rocchio?" + new URLSearchParams({ tags: old_reacts[selected_rec][1], likes: likes, drink: old_reacts[selected_rec][0], ingrs: old_reacts[selected_rec][2] }).toString())
                 .then((response) =>
                     response.json())
                 .then((data) =>
                     data.forEach(row => {
-                        console.log(row)
                         let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = tempTemplate(row, current_rec)
+                        tempDiv.innerHTML = drinkTemplate(row, current_rec)
                         current_rec += 1
-                        document.getElementsByClassName('outer')[0].appendChild(tempDiv)
+                        if (current_rec < 7) { document.getElementsByClassName('results')[0].appendChild(tempDiv) }
                     }));
         }
 
@@ -104,9 +100,7 @@
         }
 
         function filterText() {
-            console.log(document.getElementsByClassName('results')[0].innerHTML)
             document.getElementsByClassName('results')[0].innerHTML = "";
-            console.log(document.getElementsByClassName('results')[0].innerHTML)
             current_rec = 0
             fetch("/drinks_table?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
                 .then((response) =>
