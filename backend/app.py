@@ -104,8 +104,8 @@ def sql_search(likes, dislikes):
     # likes = drink[0]
     # dislikes = drink[1]
 
-    projects_repr_in = vect(drinks_data)
-    documents = read_data(drinks_data)
+    projects_repr_in = vect(drinks_data[1:])
+    documents = read_data(drinks_data[1:])
 
     recs = []
     for dic in drinks_data[1:]:
@@ -131,19 +131,16 @@ def sql_search(likes, dislikes):
         for rec in recs:
             ingredients = set(rec[2])
             if (len(set_likes.intersection(ingredients)) > 0):
-
                 acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
                     rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
-
+    highest_sim = []
     for i in acc:
         project_index_in = i['id']
-        highest_sim = []
         for tup in closest_projects(project_index_in, projects_repr_in, documents):
             highest_sim.append(tuple(tup))
         highest_sim.sort(key=lambda x: x[1], reverse=True)
 
         # highest_sim is the list of drinks and their sim score
-    # print(highest_sim)
 
     inverted_idx = build_inverted_index()
     result = []
@@ -172,14 +169,6 @@ def drinks_search():
     dislikes_list = [x.strip() for x in dislikes_list]
     input_likes = likes_list
     input_dislikes = dislikes_list
-
-    print("FEEDBACK DISLIKES: ")
-    print(feedback_dislikes)
-    print()
-    print("FEEDBACK LIKES: ")
-    print(feedback_likes)
-    print()
-
     return sql_search(likes_list, dislikes_list)
 
 
