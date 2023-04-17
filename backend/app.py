@@ -15,7 +15,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "password"  # password"
+MYSQL_USER_PASSWORD = ""  # "password"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -33,34 +33,6 @@ CORS(app)
 # but if you decide to use SQLAlchemy ORM framework,
 # there's a much better and cleaner way to do this
 
-feedback_likes = {}
-feedback_dislikes = {}
-input_likes = []
-input_dislikes = []
-
-
-def build_inverted_index():
-    with open("../tags.csv", 'r') as f:
-
-        dict_reader = DictReader(f)
-        documents = defaultdict(list)
-        for x in dict_reader:
-
-            ingredient_list = x['ingredients1']+"," + x['ingredients2']+","+x['ingredients3']+","+x['ingredients4']+","+x['ingredients5']+","+x['ingredients6'] + \
-                ","+x['ingredients7']+","+x['ingredients8']+","+x['ingredients9'] + \
-                ","+x['ingredients10']+"," + \
-                x['ingredients11']+","+x['ingredients12']
-
-            documents[x['drink_name']].append(
-                (ingredient_list.rstrip(','), x["instructions"], x["picture"], x["tags"]))
-
-    return documents
-
-
-feedback_likes = {}
-feedback_dislikes = {}
-input_likes = []
-input_dislikes = []
 
 feedback_likes = {}
 feedback_dislikes = {}
@@ -68,20 +40,20 @@ input_likes = []
 input_dislikes = []
 
 
-def build_inverted_index():
-    with open("../tags.csv", 'r') as f:
+def build_inverted_index(dict_reader):
+    # with open("../tags.csv", 'r') as f:
 
-        dict_reader = DictReader(f)
-        documents = defaultdict(list)
-        for x in dict_reader:
+    #    dict_reader = DictReader(f)
+    documents = defaultdict(list)
+    for x in dict_reader:
 
-            ingredient_list = x['ingredients1']+"," + x['ingredients2']+","+x['ingredients3']+","+x['ingredients4']+","+x['ingredients5']+","+x['ingredients6'] + \
-                ","+x['ingredients7']+","+x['ingredients8']+","+x['ingredients9'] + \
-                ","+x['ingredients10']+"," + \
-                x['ingredients11']+","+x['ingredients12']
+        ingredient_list = x['ingredients1']+"," + x['ingredients2']+","+x['ingredients3']+","+x['ingredients4']+","+x['ingredients5']+","+x['ingredients6'] + \
+            ","+x['ingredients7']+","+x['ingredients8']+","+x['ingredients9'] + \
+            ","+x['ingredients10']+"," + \
+            x['ingredients11']+","+x['ingredients12']
 
-            documents[x['drink_name']].append(
-                (ingredient_list.rstrip(','), x["instructions"], x["picture"], x["tags"]))
+        documents[x['drink_name']].append(
+            (ingredient_list.rstrip(','), x["instructions"], x["picture"], x["tags"]))
 
     return documents
 
@@ -164,7 +136,7 @@ def sql_search(likes, dislikes):
 
         # highest_sim is the list of drinks and their sim score
 
-    inverted_idx = build_inverted_index()
+    inverted_idx = build_inverted_index(drinks_data[1:])
     result = []
     for i, j in highest_sim[:7]:
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
