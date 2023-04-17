@@ -57,12 +57,16 @@
                 <u class='details' onclick="openModal('${data.drink}')">Details</u>
                 </div>
                 <div id= "${data.drink}" class="hidden-details" style="display: none">
+                    <div class="desc-body" style="display: flex">
                         <div class="modal-body" style"float:left;">
                             <h3 class='drink-title'>${data.drink}</h3>
                             <p class='drink-desc'>${data.ingredients}</p>
                             <p class='drink-desc'>${data.instructions}</p>
                         </div>
-                    <img src=${data.picture} style="width: 30%; height: 30%; border-radius: 10px;">
+                        <img src=${data.picture} style="width: 30%; height: 30%; border-radius: 10px;">
+                    </div>
+                    <svg id = ${current_rec}_up onclick="reactClick(this.id)" class="fa-regular fa-thumbs-up" style="color: #752e3e;"></svg>
+                    <svg id = ${current_rec}_down onclick="reactClick(this.id)" class="fa-regular fa-thumbs-down" style="color: #752e3e; margin-bottom: 4px;"></svg>
                 </div>`
             // <img src=${data.picture} style="width: 75px; height: 75px;">
             // <img id = ${current_rec}_up onclick="reactClick(this.id)" src="/static/images/thumbs_up.png" style="width: 50px; height: 50px;"/>
@@ -116,7 +120,7 @@
 
         function openModal(id) {
             document.getElementsByClassName("modal")[0].style.display = "block";
-            document.getElementById(id).style.display = "flex";
+            document.getElementById(id).style.display = "block";
             document.getElementsByClassName("modal-content")[0].appendChild(document.getElementById(id));
         }
 

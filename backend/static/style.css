@@ -41,6 +41,10 @@ h2 {
     color: #752e3e;
 }
 
+.drink-title{
+    color:#752e3e;
+}
+
 .svg-inline--fa{
     height: 1.5em;
     margin:8px;
@@ -126,6 +130,7 @@ h2 {
     position: relative;
     align-items: center;
     margin-top:10px;
+    overflow-y: auto;
 }
 
 .results {
@@ -168,6 +173,7 @@ h2 {
     top: 0;
     width: 100%; /* Full width */
     height: 100%; /* Full height */
+    overflow-x: scroll;
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
   }
