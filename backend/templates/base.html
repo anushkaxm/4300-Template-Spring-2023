@@ -83,6 +83,8 @@
             old_reacts = current_reacts
             current_reacts = {}
             closeModal()
+            var close = "<span class='close' onclick='closeModal()' style='padding-left:10px;'>&times;</span>"
+            document.getElementsByClassName("modal-content")[0].innerHTML = close;
             fetch("/rocchio?" + new URLSearchParams({ tags: old_reacts[selected_rec][1], likes: likes, drink: old_reacts[selected_rec][0], ingrs: old_reacts[selected_rec][2] }).toString())
                 .then((response) =>
                     response.json())
