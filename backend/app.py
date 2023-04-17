@@ -15,7 +15,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""  # "password"  # password"
+MYSQL_USER_PASSWORD = "password"  # password"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -140,11 +140,17 @@ def sql_search(likes, dislikes):
         set_likes = set(likes)
         # ingredients = set()
         for rec in recs:
-            ingredients = set(rec[2].split(' '))
+            # print(rec[2])
+            # ingredients = set(rec[2].split(' '))
+            for like in set_likes:
+                if like in rec[2]:
+                    acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
+                        rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
+
             # print(ingredients)
-            if (len(set_likes.intersection(ingredients)) > 0):
-                acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
-                    rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
+            # if (len(set_likes.intersection(ingredients)) > 0):
+            #    acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
+            #        rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
     highest_sim = []
     drink_sim = []
     for i in acc:
