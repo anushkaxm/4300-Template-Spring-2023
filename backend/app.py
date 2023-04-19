@@ -58,28 +58,27 @@ def build_inverted_index(dict_reader):
     return documents
 
 
-def sql_search(likes, dislikes):
-    # query_sql = f"""SELECT * FROM mytable where LOWER( drink_name ) LIKE '%%{drink.lower()}%%' limit 5"""
-    query_sql = f"""SELECT * FROM drinks_table;"""
+query_sql = f"""SELECT * FROM drinks_table;"""
 
-    keys = ["id", "drink_name", "instructions", "steps", "picture", "tags", "ingredients1", "quantity1", "ingredients2",
-            "quantity2", "ingredients3", "quantity3", "ingredients4", "quantity4", "ingredients5", "quantity5",
-            "ingredients6", "quantity6", "ingredients7", "quantity7", "ingredients8", "quantity8", "ingredients9",
-            "quantity9", "ingredients10", "quantity10", "ingredients11", "quantity11", "ingredients12", "quantity12"]
+keys = ["id", "drink_name", "instructions", "steps", "picture", "tags", "ingredients1", "quantity1", "ingredients2",
+        "quantity2", "ingredients3", "quantity3", "ingredients4", "quantity4", "ingredients5", "quantity5",
+        "ingredients6", "quantity6", "ingredients7", "quantity7", "ingredients8", "quantity8", "ingredients9",
+        "quantity9", "ingredients10", "quantity10", "ingredients11", "quantity11", "ingredients12", "quantity12"]
 
-    ingr_cols = ["ingredients1", "ingredients2", "ingredients3", "ingredients4", "ingredients5", "ingredients6", "ingredients7",
-                 "ingredients8", "ingredients9", "ingredients10", "ingredients11", "ingredients12"]
+ingr_cols = ["ingredients1", "ingredients2", "ingredients3", "ingredients4", "ingredients5", "ingredients6", "ingredients7",
+                "ingredients8", "ingredients9", "ingredients10", "ingredients11", "ingredients12"]
 
-    data = mysql_engine.query_selector(query_sql)
+data = mysql_engine.query_selector(query_sql)
 
-    drinks_data = [dict(zip(keys, i)) for i in data]
+drinks_data = [dict(zip(keys, i)) for i in data]
+projects_repr_in = vect(drinks_data[1:])
+documents = read_data(drinks_data[1:])
 
-    projects_repr_in = vect(drinks_data[1:])
-    documents = read_data(drinks_data[1:])
+def get_recs(likes, dislikes):
 
     recs = []
     empty_dislikes = False
-    if (dislikes == ['']):
+    if (dislikes == [''] or dislikes == []):
         empty_dislikes = True
     if (empty_dislikes):
         for x in drinks_data[1:]:
@@ -104,7 +103,7 @@ def sql_search(likes, dislikes):
                 recs.append((dic["id"], dic["drink_name"], curr_ingredients,
                             dic['picture'], dic['instructions'], dic['tags']))
     acc = []
-    if likes == ['']:  # user inputs no likes
+    if likes == [''] or likes == []:  # user inputs no likes
         for rec in recs:
             acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
                 rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
@@ -123,6 +122,7 @@ def sql_search(likes, dislikes):
             # if (len(set_likes.intersection(ingredients)) > 0):
             #    acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
             #        rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
+    print("acc", acc)
     highest_sim = []
     drink_sim = []
     for i in acc:
@@ -133,7 +133,7 @@ def sql_search(likes, dislikes):
                 highest_sim.append(tuple(tup))
                 drink_sim.append(drink)
         highest_sim.sort(key=lambda x: x[1], reverse=True)
-
+    print("highest sim", highest_sim)
         # highest_sim is the list of drinks and their sim score
 
     inverted_idx = build_inverted_index(drinks_data[1:])
@@ -161,7 +161,7 @@ def drinks_search():
     dislikes_list = [x.strip() for x in dislikes_list]
     input_likes = likes_list
     input_dislikes = dislikes_list
-    return sql_search(likes_list, dislikes_list)
+    return get_recs(likes_list, dislikes_list)
 
 
 @ app.route("/rocchio")
@@ -220,5 +220,5 @@ def rocchio_search():
                 new_feedback_liked_ingr.append(ingr)
             new_feedback_disliked_ingr.append(ingr)
     print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
-    return sql_search(new_feedback_liked_ingr, new_feedback_disliked_ingr)
+    return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr)
 # app.run(debug=True)
