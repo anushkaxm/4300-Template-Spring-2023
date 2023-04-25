@@ -74,9 +74,8 @@ drinks_data = [dict(zip(keys, i)) for i in data]
 projects_repr_in = vect(drinks_data[1:])
 documents = read_data(drinks_data[1:])
 
-def get_recs(likes, dislikes):
-
-    recs = []
+def boolean_not(dislikes):
+    recs=[]
     empty_dislikes = False
     if (dislikes == [''] or dislikes == []):
         empty_dislikes = True
@@ -102,6 +101,12 @@ def get_recs(likes, dislikes):
             if found_dislike == False:
                 recs.append((dic["id"], dic["drink_name"], curr_ingredients,
                             dic['picture'], dic['instructions'], dic['tags']))
+    return recs
+
+
+def get_recs(likes, dislikes):
+
+    recs = boolean_not(dislikes)
     acc = []
     if likes == [''] or likes == []:  # user inputs no likes
         for rec in recs:
@@ -159,7 +164,6 @@ def get_recs(likes, dislikes):
 @ app.route("/")
 def home():
     return render_template('base.html', title="sample html")
-
 
 @ app.route("/drinks_table")
 def drinks_search():
@@ -233,3 +237,26 @@ def rocchio_search():
     #print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
     return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr)
 # app.run(debug=True)
+
+@ app.route("/boolean_and")
+def boolean_and_search(likes, dislikes):
+    print("here")
+    print("likes", likes)
+    recs = boolean_not(dislikes)
+
+    inverted_idx = build_inverted_index(drinks_data[1:])
+    acc = []
+    print("inv index", inverted_idx)
+
+    recs_drink_name = []
+    for drink in recs:
+        recs_drink_name.append(drink[1])
+
+    if likes != [''] or likes != []:  # user inputs no likes
+        for dic in drinks_data[1:]:
+            if (dic['drink_name'] in recs_drink_name) == False:
+                if like in inverted_idx[dic['drink_name']][0][0]:
+                        acc.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
+                        [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3]})
+    result = acc[0:6]
+    return json.dumps(result)
