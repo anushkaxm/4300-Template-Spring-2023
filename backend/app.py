@@ -111,7 +111,7 @@ def boolean_not(dislikes):
     return recs
 
 
-def get_recs(likes, dislikes):
+def get_recs(likes, dislikes, get_most_similar=True):
 
     recs = boolean_not(dislikes)
     acc = []
@@ -138,8 +138,13 @@ def get_recs(likes, dislikes):
         highest_sim.sort(key=lambda x: x[1], reverse=True)
         # highest_sim is the list of drinks and their sim score
 
+    if get_most_similar:
+        highest_sim = highest_sim[:6]
+    else:
+        highest_sim = highest_sim[-6:]
+
     result = []
-    for i, j in highest_sim[:7]:
+    for i, j in highest_sim:
         overlap = 0
         for like in input_likes:
             if like in inverted_idx[i][0][0]:
