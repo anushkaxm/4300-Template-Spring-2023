@@ -7,6 +7,9 @@
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
 
 <body>
+    <div class="empty">
+
+    </div>
     <div class="full-body-container">
         <div class="form-container">
             <div class="drinks-title">
@@ -36,6 +39,12 @@
             </div>
         </div>
         <div class="results-container">
+            <div class="no-results">
+
+            </div>
+            <div class="loader">
+                <span class="loading-animation"></span>
+            </div>
             <div class="results">
 
             </div>
@@ -58,7 +67,7 @@
                     <h3 class='drink-title'  style="padding-left:10px;">${data.drink}</h3>
                 </div>
                 <p class='drink-desc'>${data.ingredients}</p>
-                <p class='drink-desc'>Merged Score ${data.merged_score}%</p>
+                <p class='drink-desc'>Similarity: ${data.merged_score}%</p>
                 <u class='details' onclick="openModal('${data.drink}')">Details</u>
                 </div>
                 <div id= "${data.drink}" class="hidden-details" style="display: none">
@@ -87,16 +96,25 @@
             closeModal()
             var close = "<span class='close' onclick='closeModal()' style='padding-left:10px;'>&times;</span>"
             document.getElementsByClassName("modal-content")[0].innerHTML = close;
+            document.getElementsByClassName("loader")[0].style.display = "flex";
             fetch("/rocchio?" + new URLSearchParams({ tags: old_reacts[selected_rec][1], likes: likes, drink: old_reacts[selected_rec][0], ingrs: old_reacts[selected_rec][2] }).toString())
                 .then((response) =>
                     response.json())
-                .then((data) =>
-                    data.forEach(row => {
-                        let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = drinkTemplate(row, current_rec)
-                        current_rec += 1
-                        if (current_rec < 7) { document.getElementsByClassName('results')[0].appendChild(tempDiv) }
-                    }));
+                .then((data) => {
+                    document.getElementsByClassName("loader")[0].style.display = "none";
+                    if (data.length == 0) {
+                        document.getElementsByClassName('no-results')[0].innerHTML =
+                            `<p class='no-drinks'>No similar drinks found!</p>`;
+                    }
+                    else {
+                        data.forEach(row => {
+                            let tempDiv = document.createElement("div")
+                            tempDiv.innerHTML = drinkTemplate(row, current_rec)
+                            current_rec += 1
+                            if (current_rec < 7) { document.getElementsByClassName('results')[0].appendChild(tempDiv) }
+                        })
+                    }
+                });
         }
 
         function sendFocus() {
@@ -106,16 +124,27 @@
         function filterText() {
             document.getElementsByClassName('results')[0].innerHTML = "";
             current_rec = 0
+            document.getElementsByClassName("loader")[0].style.display = "flex";
             fetch("/drinks_table?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
                 .then((response) =>
                     response.json())
-                .then((data) =>
-                    data.forEach(row => {
-                        let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = drinkTemplate(row, current_rec)
-                        current_rec += 1
-                        if (current_rec < 7) { document.getElementsByClassName('results')[0].appendChild(tempDiv) }
-                    }));
+                .then((data) => {
+                    document.getElementsByClassName("loader")[0].style.display = "none";
+                    if (data.length == 0) {
+                        document.getElementsByClassName('no-results')[0].innerHTML =
+                            `<p class='no-drinks'>No drinks found!</p>`;
+                    }
+                    else {
+                        document.getElementsByClassName('no-results')[0].innerHTML = '';
+                        data.forEach(row => {
+                            let tempDiv = document.createElement("div")
+                            tempDiv.innerHTML = drinkTemplate(row, current_rec)
+                            current_rec += 1
+                            if (current_rec < 7) { document.getElementsByClassName('results')[0].appendChild(tempDiv) }
+                        })
+                    }
+                }
+                );
             console.log(current_reacts)
             fetch("/clusters?" + new URLSearchParams())
                 .then((response) =>
@@ -128,18 +157,28 @@
         function UseAllIngr() {
             document.getElementsByClassName('results')[0].innerHTML = "";
             current_rec = 0
-            console.log(document.getElementById('filter-text-likes').value)
+            document.getElementsByClassName("loader")[0].style.display = "flex";
             fetch("/boolean_and?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
                 .then((response) =>
                     response.json())
-                .then((data) =>
-                    data.forEach(row => {
-                        console.log("row", row)
-                        let tempDiv = document.createElement("div")
-                        tempDiv.innerHTML = drinkTemplate(row, current_rec)
-                        current_rec += 1
-                        document.getElementsByClassName('results')[0].appendChild(tempDiv)
-                    }));
+                .then((data) => {
+                    document.getElementsByClassName("loader")[0].style.display = "none";
+                    if (data.length == 0) {
+                        document.getElementsByClassName('no-results')[0].innerHTML =
+                            `<p class='no-drinks'>No drinks found!</p>`;
+
+                    }
+                    else {
+                        document.getElementsByClassName('no-results')[0].innerHTML = '';
+                        data.forEach(row => {
+                            console.log("row", row)
+                            let tempDiv = document.createElement("div")
+                            tempDiv.innerHTML = drinkTemplate(row, current_rec)
+                            current_rec += 1
+                            document.getElementsByClassName('results')[0].appendChild(tempDiv)
+                        })
+                    }
+                });
         }
 
         function openModal(id) {

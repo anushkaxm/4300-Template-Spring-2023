@@ -130,7 +130,9 @@ h2 {
 }
 /* end form elements styling */
 
-
+.empty{
+    height:200px;
+}
 .full-body-container{
     position:relative;
 }
@@ -141,7 +143,6 @@ h2 {
     /* position: absolute; */
     /* top: 50%;
     left: 50%; */
-    transform: translate(0%,70%); 
 }
 .form {
     display: flex;
@@ -159,7 +160,6 @@ h2 {
     margin-top:10px;
     padding-bottom:30px;
     overflow-y: auto;
-    transform: translate(0%,40%);
 }
 
 .results {
@@ -169,8 +169,15 @@ h2 {
     width: 700px;
 }
 
+.no-results{
+    text-align:center;
+    font-family: 'Source Sans Pro';
+    color: #752e3e;
+    font-size: 1.5em;
+}
+
 .drink-desc{
-    overflow-wrap:anywhere
+    overflow-wrap:anywhere;
 }
 
 .drink-body{
@@ -238,4 +245,26 @@ h2 {
   }
 
   /* End modal code */
+
+  /* loader code. Adapted from https://www.freecodecamp.org/news/how-to-build-a-delightful-loading-screen-in-5-minutes-847991da509f/*/
+  .loading-animation {  
+      width: 35px;  
+      height: 35px;  
+      display: inline-block;  
+      border: 5px solid #f1efea;  
+      border-left-color: #752e3e;  
+      border-top-color: #752e3e;  
+      border-radius: 50%;
+    }
+
+    @keyframes rotate { to {  transform: rotate(1turn) }}
+
+    .loader{
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        margin-top:55px;
+        animation: rotate 1000ms infinite linear;
+    }
+
 
