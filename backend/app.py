@@ -16,7 +16,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "password"  # ""
+MYSQL_USER_PASSWORD = ""  # "password"  # ""
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -147,7 +147,6 @@ def get_recs(likes, dislikes):
         liked_percent = overlap / (len(input_likes) + len(input_dislikes))
         merged_percent = round(100 * (j + liked_percent)/2)
 
-
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3],
                       'merged_score': merged_percent})
@@ -256,15 +255,16 @@ def boolean_and_search():
                 ingr = inverted_idx[dic['drink_name']][0][0].split(',')
                 if len(set(likes) & set(ingr)) == len(likes):
                     acc.append({'drink': dic['drink_name'], 'ingredients': inverted_idx[dic['drink_name']][0][0], 'picture': inverted_idx[dic['drink_name']]
-                    [0][2], 'instructions': inverted_idx[dic['drink_name']][0][1], 'tags': inverted_idx[dic['drink_name']][0][3],
-                    'merged_score': '100'})
+                                [0][2], 'instructions': inverted_idx[dic['drink_name']][0][1], 'tags': inverted_idx[dic['drink_name']][0][3],
+                                'merged_score': '100'})
     result = acc[0:6]
     print(result)
     return json.dumps(result)
+
 
 @ app.route("/clusters")
 def get_clusters():
     with open('drinks_clusters.pkl', 'rb') as f:
         cluster_dict = pickle.load(f)
-    #print("clusters", cluster_dict)
+    # print("clusters", cluster_dict)
     return json.dumps('test success')
