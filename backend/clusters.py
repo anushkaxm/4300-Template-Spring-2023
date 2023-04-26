@@ -7,8 +7,6 @@ import pickle
 from csv import DictReader
 # open file in read mode
 
-# should probably also add tags
-
 
 def get_documents():
     with open("tags.csv", 'r') as f:
@@ -44,3 +42,7 @@ def pickle_clusters():
         cluster_dictionary[documents[i][0]] = label[i]
     with open('drinks_clusters.pkl', 'wb') as f:
         pickle.dump(cluster_dictionary, f)
+
+
+if __name__ == '__main__':
+    pickle_clusters()

@@ -6,7 +6,8 @@ from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 from buildrecs import closest_projects, vect, read_data
 from collections import defaultdict
-from csv import DictReader
+# from csv import DictReader
+import random
 
 # ROOT_PATH for linking with all your files.
 # Feel free to use a config.py or settings.py with a global export variable
@@ -42,9 +43,6 @@ input_dislikes = []
 
 
 def build_inverted_index(dict_reader):
-    # with open("../tags.csv", 'r') as f:
-
-    #    dict_reader = DictReader(f)
     documents = defaultdict(list)
     for x in dict_reader:
 
@@ -74,6 +72,7 @@ data = mysql_engine.query_selector(query_sql)
 drinks_data = [dict(zip(keys, i)) for i in data]
 projects_repr_in = vect(drinks_data[1:])
 documents = read_data(drinks_data[1:])
+inverted_idx = build_inverted_index(drinks_data[1:])
 
 
 def boolean_not(dislikes):
@@ -134,7 +133,6 @@ def get_recs(likes, dislikes):
         highest_sim.sort(key=lambda x: x[1], reverse=True)
         # highest_sim is the list of drinks and their sim score
 
-    inverted_idx = build_inverted_index(drinks_data[1:])
     result = []
     for i, j in highest_sim[:7]:
         overlap = 0
@@ -229,26 +227,19 @@ def rocchio_search():
             new_feedback_disliked_ingr.append(ingr)
     # print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
     return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr)
-# app.run(debug=True)
 
 
 @ app.route("/boolean_and")
 def boolean_and_search():
-    print("here")
     likes = request.args.get("likes").split(", ")
     dislikes = request.args.get("dislikes").split(", ")
     input_likes = likes
     input_dislikes = dislikes
-    print('here2')
     recs = boolean_not(dislikes)
-
-    inverted_idx = build_inverted_index(drinks_data[1:])
     acc = []
-
     recs_drink_name = []
     for drink in recs:
         recs_drink_name.append(drink[1])
-    print('here3')
     if likes != [''] or likes != []:  # user inputs no likes
         for dic in drinks_data[1:]:
             if (dic['drink_name'] in recs_drink_name):
@@ -266,5 +257,16 @@ def boolean_and_search():
 def get_clusters():
     with open('drinks_clusters.pkl', 'rb') as f:
         cluster_dict = pickle.load(f)
+    acc = []
+    cluster_dict_inv = defaultdict(cluster_dict)
+    for key, val in sorted(cluster_dict.items()):
+        cluster_dict_inv[val].append(key)
+    for i in range(len(cluster_dict_inv)):
+        drink_name = random.choice(cluster_dict_inv[i])
+        acc.append({'drink': drink_name, 'ingredients': inverted_idx[drink_name][0][0], 'picture': inverted_idx[drink_name]
+                    [0][2], 'instructions': inverted_idx[drink_name][0][1], 'tags': inverted_idx[drink_name][0][3]})
     # print("clusters", cluster_dict)
-    return json.dumps('test success')
+    # return json.dumps('test success')
+    return json.dumps(acc)
+
+# app.run(debug=True)
