@@ -122,7 +122,7 @@ def get_recs(likes, dislikes):
             # if (len(set_likes.intersection(ingredients)) > 0):
             #    acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
             #        rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
-    print("acc", acc)
+    #print("acc", acc)
     highest_sim = []
     drink_sim = []
     for i in acc:
@@ -133,14 +133,25 @@ def get_recs(likes, dislikes):
                 highest_sim.append(tuple(tup))
                 drink_sim.append(drink)
         highest_sim.sort(key=lambda x: x[1], reverse=True)
-    print("highest sim", highest_sim)
         # highest_sim is the list of drinks and their sim score
 
     inverted_idx = build_inverted_index(drinks_data[1:])
     result = []
     for i, j in highest_sim[:7]:
+        print(j)
+        overlap = 0
+        for like in input_likes:
+            if like in inverted_idx[i][0][0]:
+                overlap += 1
+        for dislike in input_dislikes:
+            if dislike not in inverted_idx[i][0][0]:
+                overlap += 1
+        liked_percent = overlap / (len(input_likes) + len(input_dislikes))
+        merged_percent = round(100 * (j + liked_percent)/2)
+
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
-                      [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3]})
+                      [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3], 
+                      'merged_score': merged_percent})
 
     return json.dumps(result)
 
@@ -178,7 +189,7 @@ def rocchio_search():
         feedback_dislikes[drink_name] = [tags, ingredients]
 
     # print("feedback", feedback_likes, feedback_dislikes)
-    alpha = 1
+    alpha = 1.5
     beta = 1.25
     gamma = 1.75
     new_query_dict = {}
@@ -219,6 +230,6 @@ def rocchio_search():
             for _ in range(round(new_query_dict[ingr])):
                 new_feedback_liked_ingr.append(ingr)
             new_feedback_disliked_ingr.append(ingr)
-    print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
+    #print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
     return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr)
 # app.run(debug=True)
