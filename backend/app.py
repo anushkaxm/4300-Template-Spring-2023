@@ -92,17 +92,22 @@ def boolean_not(dislikes):
             ), x['picture'], x['instructions'], x['tags']))
     else:
         for dic in drinks_data[1:]:
+            print("drink:", dic["drink_name"])
             found_dislike = False
             for dislike in dislikes:
-                curr_ingredients = []
-                for col in ingr_cols:
-                    if dic[col] and dic[col] != "":
-                        curr_ingredients.append(dic[col])
-                        if dislike in dic[col]:
-                            found_dislike = True
+                if dislike != "" and dislike != " ":
+                    curr_ingredients = []
+                    for col in ingr_cols:
+                        if dic[col] and dic[col] != "":
+                            print('ingr', dic[col])
+                            curr_ingredients.append(dic[col])
+                            if dislike in dic[col]:
+                                print("dislike found:", dislike)
+                                found_dislike = True
             if found_dislike == False:
                 recs.append((dic["id"], dic["drink_name"], curr_ingredients,
                             dic['picture'], dic['instructions'], dic['tags']))
+    print("recs in not", recs)
     return recs
 
 
@@ -148,6 +153,7 @@ def get_recs(likes, dislikes):
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3],
                       'merged_score': merged_percent})
+    print("results", result)
     return json.dumps(result)
 
 
@@ -225,7 +231,7 @@ def rocchio_search():
             for _ in range(round(new_query_dict[ingr])):
                 new_feedback_liked_ingr.append(ingr)
             new_feedback_disliked_ingr.append(ingr)
-    # print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
+    print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
     return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr)
 
 
@@ -233,8 +239,6 @@ def rocchio_search():
 def boolean_and_search():
     likes = request.args.get("likes").split(", ")
     dislikes = request.args.get("dislikes").split(", ")
-    input_likes = likes
-    input_dislikes = dislikes
     recs = boolean_not(dislikes)
     acc = []
     recs_drink_name = []
@@ -249,7 +253,6 @@ def boolean_and_search():
                                 [0][2], 'instructions': inverted_idx[dic['drink_name']][0][1], 'tags': inverted_idx[dic['drink_name']][0][3],
                                 'merged_score': '100'})
     result = acc[0:6]
-    print(result)
     return json.dumps(result)
 
 
