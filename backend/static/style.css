@@ -246,3 +246,25 @@ h2 {
 
   /* End modal code */
 
+  /* loader code. Adapted from https://www.freecodecamp.org/news/how-to-build-a-delightful-loading-screen-in-5-minutes-847991da509f/*/
+  .loading-animation {  
+      width: 35px;  
+      height: 35px;  
+      display: inline-block;  
+      border: 5px solid #f1efea;  
+      border-left-color: #752e3e;  
+      border-top-color: #752e3e;  
+      border-radius: 50%;
+    }
+
+    @keyframes rotate { to {  transform: rotate(1turn) }}
+
+    .loader{
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        margin-top:55px;
+        animation: rotate 1000ms infinite linear;
+    }
+
+
