@@ -1,5 +1,6 @@
 import json
 import os
+import pickle
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
@@ -66,7 +67,7 @@ keys = ["id", "drink_name", "instructions", "steps", "picture", "tags", "ingredi
         "quantity9", "ingredients10", "quantity10", "ingredients11", "quantity11", "ingredients12", "quantity12"]
 
 ingr_cols = ["ingredients1", "ingredients2", "ingredients3", "ingredients4", "ingredients5", "ingredients6", "ingredients7",
-                "ingredients8", "ingredients9", "ingredients10", "ingredients11", "ingredients12"]
+             "ingredients8", "ingredients9", "ingredients10", "ingredients11", "ingredients12"]
 
 data = mysql_engine.query_selector(query_sql)
 
@@ -74,11 +75,12 @@ drinks_data = [dict(zip(keys, i)) for i in data]
 projects_repr_in = vect(drinks_data[1:])
 documents = read_data(drinks_data[1:])
 
-def get_recs(likes, dislikes):
 
+def boolean_not(dislikes):
     recs = []
     empty_dislikes = False
-    if (dislikes == [''] or dislikes == []):
+    print("dislikes", dislikes)
+    if (dislikes == [''] or dislikes == [] or dislikes == ""):
         empty_dislikes = True
     if (empty_dislikes):
         for x in drinks_data[1:]:
@@ -102,6 +104,12 @@ def get_recs(likes, dislikes):
             if found_dislike == False:
                 recs.append((dic["id"], dic["drink_name"], curr_ingredients,
                             dic['picture'], dic['instructions'], dic['tags']))
+    return recs
+
+
+def get_recs(likes, dislikes):
+
+    recs = boolean_not(dislikes)
     acc = []
     if likes == [''] or likes == []:  # user inputs no likes
         for rec in recs:
@@ -109,20 +117,11 @@ def get_recs(likes, dislikes):
                 rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
     else:
         set_likes = set(likes)
-        # ingredients = set()
         for rec in recs:
-            # print(rec[2])
-            # ingredients = set(rec[2].split(' '))
             for like in set_likes:
                 if like in rec[2]:
                     acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
                         rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
-
-            # print(ingredients)
-            # if (len(set_likes.intersection(ingredients)) > 0):
-            #    acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
-            #        rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
-    #print("acc", acc)
     highest_sim = []
     drink_sim = []
     for i in acc:
@@ -138,7 +137,6 @@ def get_recs(likes, dislikes):
     inverted_idx = build_inverted_index(drinks_data[1:])
     result = []
     for i, j in highest_sim[:7]:
-        print(j)
         overlap = 0
         for like in input_likes:
             if like in inverted_idx[i][0][0]:
@@ -149,10 +147,10 @@ def get_recs(likes, dislikes):
         liked_percent = overlap / (len(input_likes) + len(input_dislikes))
         merged_percent = round(100 * (j + liked_percent)/2)
 
-        result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
-                      [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3], 
-                      'merged_score': merged_percent})
 
+        result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
+                      [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3],
+                      'merged_score': merged_percent})
     return json.dumps(result)
 
 
@@ -230,6 +228,43 @@ def rocchio_search():
             for _ in range(round(new_query_dict[ingr])):
                 new_feedback_liked_ingr.append(ingr)
             new_feedback_disliked_ingr.append(ingr)
-    #print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
+    # print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
     return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr)
 # app.run(debug=True)
+
+
+@ app.route("/boolean_and")
+def boolean_and_search():
+    print("here")
+    likes = request.args.get("likes").split(", ")
+    dislikes = request.args.get("dislikes").split(", ")
+    input_likes = likes
+    input_dislikes = dislikes
+    print('here2')
+    recs = boolean_not(dislikes)
+
+    inverted_idx = build_inverted_index(drinks_data[1:])
+    acc = []
+
+    recs_drink_name = []
+    for drink in recs:
+        recs_drink_name.append(drink[1])
+    print('here3')
+    if likes != [''] or likes != []:  # user inputs no likes
+        for dic in drinks_data[1:]:
+            if (dic['drink_name'] in recs_drink_name):
+                ingr = inverted_idx[dic['drink_name']][0][0].split(',')
+                if len(set(likes) & set(ingr)) == len(likes):
+                    acc.append({'drink': dic['drink_name'], 'ingredients': inverted_idx[dic['drink_name']][0][0], 'picture': inverted_idx[dic['drink_name']]
+                    [0][2], 'instructions': inverted_idx[dic['drink_name']][0][1], 'tags': inverted_idx[dic['drink_name']][0][3],
+                    'merged_score': '100'})
+    result = acc[0:6]
+    print(result)
+    return json.dumps(result)
+
+@ app.route("/clusters")
+def get_clusters():
+    with open('drinks_clusters.pkl', 'rb') as f:
+        cluster_dict = pickle.load(f)
+    #print("clusters", cluster_dict)
+    return json.dumps('test success')

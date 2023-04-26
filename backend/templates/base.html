@@ -12,7 +12,7 @@
             <div class="drinks-title">
                 <svg class="fa-solid fa-martini-glass" style="color: #752e3e;"></svg>
                 <h1 id="title"> Recs on the Rocks</h1>
-                <h2 id="" subtitle">Drink Recommendation Engine</h2>
+                <h2 id="subtitle">Drink Recommendation Engine</h2>
             </div>
             <div class="form">
                 <div class="input-box-container">
@@ -25,8 +25,13 @@
                         <input placeholder="Dislikes" id="filter-text-dislikes">
                     </div>
                 </div>
-                <div class="submit-button">
-                    <button id="Submit" onclick="filterText()">Recommend</button>
+                <div class="buttons">
+                    <div class="submit-button">
+                        <button id="Submit" onclick="filterText()">Recommend</button>
+                    </div>
+                    <div class="and-button">
+                        <button id="BooleanAnd" onclick="UseAllIngr()">Use All Ingredients</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,10 +73,6 @@
                     <svg id = ${current_rec}_up onclick="reactClick(this.id)" class="fa-regular fa-thumbs-up" style="color: #752e3e;"></svg>
                     <svg id = ${current_rec}_down onclick="reactClick(this.id)" class="fa-regular fa-thumbs-down" style="color: #752e3e; margin-bottom: 4px;"></svg>
                 </div>`
-            // <img src=${data.picture} style="width: 75px; height: 75px;">
-            // <img id = ${current_rec}_up onclick="reactClick(this.id)" src="/static/images/thumbs_up.png" style="width: 50px; height: 50px;"/>
-            // <img id = ${current_rec}_down onclick="reactClick(this.id)" src="/static/images/thumbs_down.png" style="width: 50px; height: 50px;"/>
-            //                <p class='drink-desc'>${data.instructions}</p>
         }
 
         function reactClick(id) {
@@ -114,6 +115,30 @@
                         tempDiv.innerHTML = drinkTemplate(row, current_rec)
                         current_rec += 1
                         if (current_rec < 7) { document.getElementsByClassName('results')[0].appendChild(tempDiv) }
+                    }));
+            console.log(current_reacts)
+            fetch("/clusters?" + new URLSearchParams())
+                .then((response) =>
+                    response.json())
+                .then((data) =>
+                    console.log(data)
+                );
+        }
+
+        function UseAllIngr() {
+            document.getElementsByClassName('results')[0].innerHTML = "";
+            current_rec = 0
+            console.log(document.getElementById('filter-text-likes').value)
+            fetch("/boolean_and?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
+                .then((response) =>
+                    response.json())
+                .then((data) =>
+                    data.forEach(row => {
+                        console.log("row", row)
+                        let tempDiv = document.createElement("div")
+                        tempDiv.innerHTML = drinkTemplate(row, current_rec)
+                        current_rec += 1
+                        document.getElementsByClassName('results')[0].appendChild(tempDiv)
                     }));
         }
 
