@@ -53,7 +53,37 @@ h2 {
 /* end title styling */
 
  /* form elements styling */
+.buttons{
+    display:flex;
+}
+
 #Submit{
+    position:relative;
+    margin-top:10px;
+    background-color:#c16270;
+    color:#f1efea;
+    padding: 8px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Source Sans Pro';
+    font-weight:lighter;
+    padding-left:25px;
+    padding-right:25px;
+}
+.submit-button{
+    padding-right:10px;
+}
+
+#Submit:hover{
+    background-color: #752e3e;
+    color: #f1efea;
+}
+
+.and-button{
+    padding-left:10px;
+}
+#BooleanAnd{
+    position:relative;
     margin-top:10px;
     background-color:#c16270;
     color:#f1efea;
@@ -66,7 +96,7 @@ h2 {
     padding-right:25px;
 }
 
-#Submit:hover{
+#BooleanAnd:hover{
     background-color: #752e3e;
     color: #f1efea;
 }
@@ -118,7 +148,7 @@ h2 {
     flex-direction: column;
     align-items: center;
     border-radius: 20px;
-    padding: 15px;
+    padding: 20px;
     background-color: #f1efea;
     position:relative;
 }

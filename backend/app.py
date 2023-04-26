@@ -67,7 +67,7 @@ keys = ["id", "drink_name", "instructions", "steps", "picture", "tags", "ingredi
         "quantity9", "ingredients10", "quantity10", "ingredients11", "quantity11", "ingredients12", "quantity12"]
 
 ingr_cols = ["ingredients1", "ingredients2", "ingredients3", "ingredients4", "ingredients5", "ingredients6", "ingredients7",
-                "ingredients8", "ingredients9", "ingredients10", "ingredients11", "ingredients12"]
+             "ingredients8", "ingredients9", "ingredients10", "ingredients11", "ingredients12"]
 
 data = mysql_engine.query_selector(query_sql)
 
@@ -75,8 +75,9 @@ drinks_data = [dict(zip(keys, i)) for i in data]
 projects_repr_in = vect(drinks_data[1:])
 documents = read_data(drinks_data[1:])
 
+
 def boolean_not(dislikes):
-    recs=[]
+    recs = []
     empty_dislikes = False
     print("dislikes", dislikes)
     if (dislikes == [''] or dislikes == [] or dislikes == ""):
@@ -148,7 +149,7 @@ def get_recs(likes, dislikes):
 
 
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
-                      [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3], 
+                      [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3],
                       'merged_score': merged_percent})
     return json.dumps(result)
 
@@ -156,6 +157,7 @@ def get_recs(likes, dislikes):
 @ app.route("/")
 def home():
     return render_template('base.html', title="sample html")
+
 
 @ app.route("/drinks_table")
 def drinks_search():
@@ -226,9 +228,10 @@ def rocchio_search():
             for _ in range(round(new_query_dict[ingr])):
                 new_feedback_liked_ingr.append(ingr)
             new_feedback_disliked_ingr.append(ingr)
-    #print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
+    # print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
     return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr)
 # app.run(debug=True)
+
 
 @ app.route("/boolean_and")
 def boolean_and_search():

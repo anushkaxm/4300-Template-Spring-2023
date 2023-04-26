@@ -25,11 +25,13 @@
                         <input placeholder="Dislikes" id="filter-text-dislikes">
                     </div>
                 </div>
-                <div class="submit-button">
-                    <button id="Submit" onclick="filterText()">Recommend</button>
-                </div>
-                <div>
-                    <button id="BooleanAnd" onclick="UseAllIngr()">Use All Ingredients</button>
+                <div class="buttons">
+                    <div class="submit-button">
+                        <button id="Submit" onclick="filterText()">Recommend</button>
+                    </div>
+                    <div class="and-button">
+                        <button id="BooleanAnd" onclick="UseAllIngr()">Use All Ingredients</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -127,8 +129,7 @@
         function UseAllIngr() {
             document.getElementsByClassName('results')[0].innerHTML = "";
             current_rec = 0
-            console.log(document.getElementById('filter-text-likes').value, document.getElementById('filter-text-dislikes').value)
-            fetch("/boolean_and?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
+            fetch("/boolean_and" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
                 .then((response) =>
                     response.json())
                 .then((data) =>
