@@ -1,5 +1,6 @@
 import json
 import os
+import pickle
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
@@ -77,7 +78,8 @@ documents = read_data(drinks_data[1:])
 def boolean_not(dislikes):
     recs=[]
     empty_dislikes = False
-    if (dislikes == [''] or dislikes == []):
+    print("dislikes", dislikes)
+    if (dislikes == [''] or dislikes == [] or dislikes == ""):
         empty_dislikes = True
     if (empty_dislikes):
         for x in drinks_data[1:]:
@@ -114,20 +116,11 @@ def get_recs(likes, dislikes):
                 rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
     else:
         set_likes = set(likes)
-        # ingredients = set()
         for rec in recs:
-            # print(rec[2])
-            # ingredients = set(rec[2].split(' '))
             for like in set_likes:
                 if like in rec[2]:
                     acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
                         rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
-
-            # print(ingredients)
-            # if (len(set_likes.intersection(ingredients)) > 0):
-            #    acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
-            #        rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
-    #print("acc", acc)
     highest_sim = []
     drink_sim = []
     for i in acc:
@@ -143,7 +136,6 @@ def get_recs(likes, dislikes):
     inverted_idx = build_inverted_index(drinks_data[1:])
     result = []
     for i, j in highest_sim[:7]:
-        print(j)
         overlap = 0
         for like in input_likes:
             if like in inverted_idx[i][0][0]:
@@ -154,10 +146,10 @@ def get_recs(likes, dislikes):
         liked_percent = overlap / (len(input_likes) + len(input_dislikes))
         merged_percent = round(100 * (j + liked_percent)/2)
 
+
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3], 
                       'merged_score': merged_percent})
-
     return json.dumps(result)
 
 
@@ -239,14 +231,16 @@ def rocchio_search():
 # app.run(debug=True)
 
 @ app.route("/boolean_and")
-def boolean_and_search(likes, dislikes):
-    print("here")
-    print("likes", likes)
+def boolean_and_search():
+    likes = request.args.get("likes").split(", ")
+    dislikes = request.args.get("dislikes").split(", ")
+    input_likes = likes
+    input_dislikes = dislikes
+
     recs = boolean_not(dislikes)
 
     inverted_idx = build_inverted_index(drinks_data[1:])
     acc = []
-    print("inv index", inverted_idx)
 
     recs_drink_name = []
     for drink in recs:
@@ -254,9 +248,18 @@ def boolean_and_search(likes, dislikes):
 
     if likes != [''] or likes != []:  # user inputs no likes
         for dic in drinks_data[1:]:
-            if (dic['drink_name'] in recs_drink_name) == False:
-                if like in inverted_idx[dic['drink_name']][0][0]:
-                        acc.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
-                        [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3]})
+            if (dic['drink_name'] in recs_drink_name):
+                ingr = inverted_idx[dic['drink_name']][0][0].split(',')
+                if len(set(likes) & set(ingr)) == len(likes):
+                    acc.append({'drink': dic['drink_name'], 'ingredients': inverted_idx[dic['drink_name']][0][0], 'picture': inverted_idx[dic['drink_name']]
+                    [0][2], 'instructions': inverted_idx[dic['drink_name']][0][1], 'tags': inverted_idx[dic['drink_name']][0][3],
+                    'merged_score': '100'})
     result = acc[0:6]
     return json.dumps(result)
+
+@ app.route("/clusters")
+def get_clusters():
+    with open('drinks_clusters.pkl', 'rb') as f:
+        cluster_dict = pickle.load(f)
+    #print("clusters", cluster_dict)
+    return json.dumps('test success')
