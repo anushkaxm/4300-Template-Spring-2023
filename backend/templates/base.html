@@ -106,7 +106,6 @@
         function filterText() {
             document.getElementsByClassName('results')[0].innerHTML = "";
             current_rec = 0
-
             fetch("/drinks_table?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
                 .then((response) =>
                     response.json())
@@ -129,7 +128,8 @@
         function UseAllIngr() {
             document.getElementsByClassName('results')[0].innerHTML = "";
             current_rec = 0
-            fetch("/boolean_and" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
+            console.log(document.getElementById('filter-text-likes').value)
+            fetch("/boolean_and?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
                 .then((response) =>
                     response.json())
                 .then((data) =>

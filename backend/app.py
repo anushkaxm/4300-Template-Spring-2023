@@ -235,11 +235,12 @@ def rocchio_search():
 
 @ app.route("/boolean_and")
 def boolean_and_search():
+    print("here")
     likes = request.args.get("likes").split(", ")
     dislikes = request.args.get("dislikes").split(", ")
     input_likes = likes
     input_dislikes = dislikes
-
+    print('here2')
     recs = boolean_not(dislikes)
 
     inverted_idx = build_inverted_index(drinks_data[1:])
@@ -248,7 +249,7 @@ def boolean_and_search():
     recs_drink_name = []
     for drink in recs:
         recs_drink_name.append(drink[1])
-
+    print('here3')
     if likes != [''] or likes != []:  # user inputs no likes
         for dic in drinks_data[1:]:
             if (dic['drink_name'] in recs_drink_name):
@@ -258,6 +259,7 @@ def boolean_and_search():
                     [0][2], 'instructions': inverted_idx[dic['drink_name']][0][1], 'tags': inverted_idx[dic['drink_name']][0][3],
                     'merged_score': '100'})
     result = acc[0:6]
+    print(result)
     return json.dumps(result)
 
 @ app.route("/clusters")
