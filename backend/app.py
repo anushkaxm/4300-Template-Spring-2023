@@ -270,6 +270,8 @@ def get_clusters():
                     [0][2], 'instructions': inverted_idx[drink_name][0][1], 'tags': inverted_idx[drink_name][0][3]})
     # print("clusters", cluster_dict)
     # return json.dumps('test success')
-    return json.dumps(acc)
+    print(acc)
+    # return json.dumps(acc)
+
 
 # app.run(debug=True)

@@ -9,17 +9,17 @@ from csv import DictReader
 
 
 def get_documents():
-    with open("tags.csv", 'r') as f:
+    with open("../tags.csv", 'r') as f:
         dict_reader = DictReader(f)
         documents = []
         for x in dict_reader:
             ingredient_tag_list = x['ingredients1']+" " + x['ingredients2']+" "+x['ingredients3']+" "+x['ingredients4']+" "+x['ingredients5']+" "+x['ingredients6'] + \
                 " "+x['ingredients7']+" "+x['ingredients8']+" "+x['ingredients9'] + \
                 " "+x['ingredients10']+" " + \
-                x['ingredients11']+" "+x['ingredients12']+" "+x['tags']
+                x['ingredients11']+" "+x['ingredients12']
 
             documents.append(
-                (x['drink_name'], ingredient_tag_list.strip()))
+                (x['drink_name'], ingredient_tag_list.strip()+" "+x['tags']))
     return documents
 
 
