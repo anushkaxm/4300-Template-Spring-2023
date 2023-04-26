@@ -130,7 +130,9 @@ h2 {
 }
 /* end form elements styling */
 
-
+.empty{
+    height:200px;
+}
 .full-body-container{
     position:relative;
 }
@@ -141,7 +143,6 @@ h2 {
     /* position: absolute; */
     /* top: 50%;
     left: 50%; */
-    transform: translate(0%,70%); 
 }
 .form {
     display: flex;
@@ -159,7 +160,6 @@ h2 {
     margin-top:10px;
     padding-bottom:30px;
     overflow-y: auto;
-    transform: translate(0%,40%);
 }
 
 .results {
@@ -169,8 +169,15 @@ h2 {
     width: 700px;
 }
 
+.no-results{
+    text-align:center;
+    font-family: 'Source Sans Pro';
+    color: #752e3e;
+    font-size: 1.5em;
+}
+
 .drink-desc{
-    overflow-wrap:anywhere
+    overflow-wrap:anywhere;
 }
 
 .drink-body{
