@@ -256,12 +256,12 @@ def boolean_and_search():
     return json.dumps(result)
 
 
-@ app.route("/clusters")
+@app.route("/clusters")
 def get_clusters():
     with open('drinks_clusters.pkl', 'rb') as f:
         cluster_dict = pickle.load(f)
     acc = []
-    cluster_dict_inv = defaultdict(cluster_dict)
+    cluster_dict_inv = defaultdict(list)
     for key, val in sorted(cluster_dict.items()):
         cluster_dict_inv[val].append(key)
     for i in range(len(cluster_dict_inv)):
@@ -270,8 +270,10 @@ def get_clusters():
                     [0][2], 'instructions': inverted_idx[drink_name][0][1], 'tags': inverted_idx[drink_name][0][3]})
     # print("clusters", cluster_dict)
     # return json.dumps('test success')
-    print(acc)
-    # return json.dumps(acc)
+    # print(acc)
+    return json.dumps(acc)
 
 
+if __name__ == '__main__':
+    get_clusters()
 # app.run(debug=True)
