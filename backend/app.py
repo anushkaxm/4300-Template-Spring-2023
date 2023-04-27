@@ -279,4 +279,23 @@ def get_clusters():
     return json.dumps(acc)
 
 
+@app.route("/cluster_recs")
+def drinks_you_might_like(drink_name):
+    with open('drinks_clusters.pkl', 'rb') as f:
+        cluster_dict = pickle.load(f)
+        cluster_dict_inv = defaultdict(list)
+    for key, val in sorted(cluster_dict.items()):
+        cluster_dict_inv[val].append(key)
+    cluster_label = cluster_dict[drink_name]
+    similar_drinks_list = cluster_dict_inv[cluster_label]
+    random.shuffle(similar_drinks_list)
+    result = []
+    # can change this number to the number of drinks you want to show
+    # only returns the drink and the image for now
+    for i in similar_drinks_list[:5]:
+        result.append({'drink': i, 'picture': inverted_idx[i][0][2]})
+
+    return json.dumps(result)
+
+
 # app.run(debug=True)
