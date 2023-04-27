@@ -194,6 +194,7 @@ def rocchio_search():
     likes = request.args.get("likes")
     drink_name = request.args.get("drink")
     ingredients = request.args.get("ingrs").split(",")
+    ingredients = [x.strip().lower() for x in ingredients]
 
     if likes == 'true':
         feedback_likes[drink_name] = [tags, ingredients]
@@ -248,10 +249,10 @@ def rocchio_search():
 
 @ app.route("/boolean_and")
 def boolean_and_search():
-    likes = request.args.get("likes").split(", ")
-    likes = [drink.lower() for drink in likes]
-    dislikes = request.args.get("dislikes").split(", ")
-    dislikes = [drink.lower() for drink in dislikes]
+    likes = request.args.get("likes").split(",")
+    likes = [drink.lower().strip() for drink in likes]
+    dislikes = request.args.get("dislikes").split(",")
+    dislikes = [drink.lower().strip() for drink in dislikes]
     recs = boolean_not(dislikes)
     acc = []
     recs_drink_name = []
