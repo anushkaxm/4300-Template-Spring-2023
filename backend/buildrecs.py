@@ -12,7 +12,7 @@ def read_data(rec):
             " "+x['ingredients10']+" " + \
             x['ingredients11']+" "+x['ingredients12']
 
-        doc.append((x['drink_name'], ingredient_list.strip()))
+        doc.append((x['drink_name'], ingredient_list.strip()+" "+x['tags']))
 
     return doc
 
@@ -47,5 +47,5 @@ def closest_projects(project_index_in, project_repr_in, documents):
     k = 5
     sims = project_repr_in.dot(project_repr_in[project_index_in, :])
     asort = np.argsort(-sims)[:k+1]
-    #(asort)
+    # (asort)
     return [(documents[i][0], sims[i]) for i in asort[1:]]

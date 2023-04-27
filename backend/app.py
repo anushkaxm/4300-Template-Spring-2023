@@ -101,7 +101,7 @@ def boolean_not(dislikes):
                         if dic[col] and dic[col] != "":
                             # print('ingr', dic[col])
                             curr_ingredients.append(dic[col])
-                            if dislike in dic[col]:
+                            if dislike in dic[col] or dislike in list(map(str.lower, inverted_idx.keys())):
                                 # print("dislike found:", dislike)
                                 found_dislike = True
             if found_dislike == False:
@@ -123,7 +123,7 @@ def get_recs(likes, dislikes, get_most_similar):
         set_likes = set(likes)
         for rec in recs:
             for like in set_likes:
-                if like in rec[2]:
+                if like in rec[2] or like in rec[5] or like in list(map(str.lower, inverted_idx.keys())):
                     acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
                         rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
     highest_sim = []
@@ -178,8 +178,8 @@ def drinks_search():
     dislikes = request.args.get("dislikes")
     likes_list = likes.split(',')
     dislikes_list = dislikes.split(',')
-    likes_list = [x.strip() for x in likes_list]
-    dislikes_list = [x.strip() for x in dislikes_list]
+    likes_list = [x.strip().lower() for x in likes_list]
+    dislikes_list = [x.strip().lower() for x in dislikes_list]
     input_likes = likes_list
     input_dislikes = dislikes_list
     most_sim = request.args.get("most_sim")
@@ -249,7 +249,9 @@ def rocchio_search():
 @ app.route("/boolean_and")
 def boolean_and_search():
     likes = request.args.get("likes").split(", ")
+    likes = [drink.lower() for drink in likes]
     dislikes = request.args.get("dislikes").split(", ")
+    dislikes = [drink.lower() for drink in dislikes]
     recs = boolean_not(dislikes)
     acc = []
     recs_drink_name = []
@@ -267,7 +269,7 @@ def boolean_and_search():
     return json.dumps(result)
 
 
-@app.route("/clusters")
+@ app.route("/clusters")
 def get_clusters():
     with open('drinks_clusters.pkl', 'rb') as f:
         cluster_dict = pickle.load(f)
@@ -282,7 +284,7 @@ def get_clusters():
     return json.dumps(acc)
 
 
-@app.route("/cluster_recs")
+@ app.route("/cluster_recs")
 def drinks_you_might_like(drink_name):
     with open('drinks_clusters.pkl', 'rb') as f:
         cluster_dict = pickle.load(f)
