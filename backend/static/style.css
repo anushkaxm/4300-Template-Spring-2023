@@ -221,7 +221,7 @@ h2 {
 
 .results {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     grid-gap: 20px;
     width: 700px;
 }
@@ -237,10 +237,6 @@ h2 {
     overflow-wrap: anywhere;
 }
 
-.drink-body {
-    display: flex;
-    vertical-align: middle;
-}
 
 .answer-box {
     margin-top: 10px;
@@ -251,7 +247,6 @@ h2 {
     padding: 18px;
     background-color: #f1efea;
     font-family: 'Source Sans Pro';
-    width: 175px;
     height: 175px;
     overflow-x: hidden;
     overflow-y: auto;
