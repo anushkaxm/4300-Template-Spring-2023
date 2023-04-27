@@ -46,10 +46,10 @@ def build_inverted_index(dict_reader):
     documents = defaultdict(list)
     for x in dict_reader:
 
-        ingredient_list = x['ingredients1']+"," + x['ingredients2']+","+x['ingredients3']+","+x['ingredients4']+","+x['ingredients5']+","+x['ingredients6'] + \
-            ","+x['ingredients7']+","+x['ingredients8']+","+x['ingredients9'] + \
-            ","+x['ingredients10']+"," + \
-            x['ingredients11']+","+x['ingredients12']
+        ingredient_list = x['ingredients1']+", " + x['ingredients2']+", "+x['ingredients3']+", "+x['ingredients4']+", "+x['ingredients5']+", "+x['ingredients6'] + \
+            ", "+x['ingredients7']+", "+x['ingredients8']+", "+x['ingredients9'] + \
+            ", "+x['ingredients10']+", " + \
+            x['ingredients11']+", "+x['ingredients12']
 
         documents[x['drink_name']].append(
             (ingredient_list.rstrip(','), x["instructions"], x["picture"], x["tags"]))
