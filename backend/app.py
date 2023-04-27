@@ -52,7 +52,7 @@ def build_inverted_index(dict_reader):
             x['ingredients11']+", "+x['ingredients12']
 
         documents[x['drink_name']].append(
-            (ingredient_list.rstrip(','), x["instructions"], x["picture"], x["tags"]))
+            (ingredient_list.rstrip(', '), x["instructions"], x["picture"], x["tags"]))
 
     return documents
 
