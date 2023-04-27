@@ -5,11 +5,14 @@ from sklearn.preprocessing import normalize
 from sklearn.cluster import KMeans
 import pickle
 from csv import DictReader
+import os
 # open file in read mode
 
 
 def get_documents():
-    with open("../tags.csv", 'r') as f:
+    path = "../"
+    path_to_file = os.path.join(path, "tags.csv")
+    with open(path_to_file, 'r') as f:
         dict_reader = DictReader(f)
         documents = []
         for x in dict_reader:
@@ -42,7 +45,3 @@ def pickle_clusters():
         cluster_dictionary[documents[i][0]] = label[i]
     with open('drinks_clusters.pkl', 'wb') as f:
         pickle.dump(cluster_dictionary, f)
-
-
-if __name__ == '__main__':
-    pickle_clusters()
