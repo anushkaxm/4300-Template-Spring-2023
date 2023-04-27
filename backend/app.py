@@ -17,7 +17,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "password"  # ""
+MYSQL_USER_PASSWORD = ""  # "password"  # ""
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -154,11 +154,11 @@ def get_recs(likes, dislikes, get_most_similar):
                 overlap += 1
 
         liked_percent = overlap / (len(input_likes) + len(input_dislikes))
-        merged_percent = round(100 * (j + liked_percent)/2)
+        merged_stars = round(5*(j + liked_percent)/2, 2)
 
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3],
-                      'merged_score': merged_percent})
+                      'merged_score': merged_stars})
     # print("results", result)
     return json.dumps(result)
 
@@ -259,7 +259,7 @@ def boolean_and_search():
                 if len(set(likes) & set(ingr)) == len(likes):
                     acc.append({'drink': dic['drink_name'], 'ingredients': inverted_idx[dic['drink_name']][0][0], 'picture': inverted_idx[dic['drink_name']]
                                 [0][2], 'instructions': inverted_idx[dic['drink_name']][0][1], 'tags': inverted_idx[dic['drink_name']][0][3],
-                                'merged_score': '100'})
+                                'merged_score': '5'})
     result = acc[0:6]
     return json.dumps(result)
 
@@ -275,7 +275,7 @@ def get_clusters():
     for i in range(len(cluster_dict_inv)):
         drink_name = random.choice(cluster_dict_inv[i])
         acc.append({'drink': drink_name, 'ingredients': inverted_idx[drink_name][0][0], 'picture': inverted_idx[drink_name]
-                    [0][2], 'instructions': inverted_idx[drink_name][0][1], 'tags': inverted_idx[drink_name][0][3], 'merged_score': '100'})
+                    [0][2], 'instructions': inverted_idx[drink_name][0][1], 'tags': inverted_idx[drink_name][0][3], 'merged_score': '5'})
     return json.dumps(acc)
 
 
