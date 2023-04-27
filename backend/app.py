@@ -152,9 +152,12 @@ def get_recs(likes, dislikes, get_most_similar):
         for dislike in input_dislikes:
             if dislike not in inverted_idx[i][0][0]:
                 overlap += 1
+        if (len(input_likes) + len(input_dislikes)) == 0:
+            merged_stars = 0
+        else:
 
-        liked_percent = overlap / (len(input_likes) + len(input_dislikes))
-        merged_stars = round(5*(j + liked_percent)/2, 2)
+            liked_percent = overlap / (len(input_likes) + len(input_dislikes))
+            merged_stars = round(5*(j + liked_percent)/2, 2)
 
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3],
