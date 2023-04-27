@@ -261,7 +261,8 @@ def boolean_and_search():
     if likes != [''] or likes != []:  # user inputs no likes
         for dic in drinks_data[1:]:
             if (dic['drink_name'] in recs_drink_name):
-                ingr = inverted_idx[dic['drink_name']][0][0].split(',')
+                ingr = inverted_idx[dic['drink_name']][0][0].split(', ')
+                print("ingr", ingr)
                 if len(set(likes) & set(ingr)) == len(likes):
                     acc.append({'drink': dic['drink_name'], 'ingredients': inverted_idx[dic['drink_name']][0][0], 'picture': inverted_idx[dic['drink_name']]
                                 [0][2], 'instructions': inverted_idx[dic['drink_name']][0][1], 'tags': inverted_idx[dic['drink_name']][0][3],
