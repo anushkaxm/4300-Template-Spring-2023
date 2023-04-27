@@ -78,7 +78,7 @@ inverted_idx = build_inverted_index(drinks_data[1:])
 def boolean_not(dislikes):
     recs = []
     empty_dislikes = False
-    print("dislikes", dislikes)
+    # print("dislikes", dislikes)
     if (dislikes == [''] or dislikes == [] or dislikes == ""):
         empty_dislikes = True
     if (empty_dislikes):
@@ -92,26 +92,26 @@ def boolean_not(dislikes):
             ), x['picture'], x['instructions'], x['tags']))
     else:
         for dic in drinks_data[1:]:
-            print("drink:", dic["drink_name"])
+            # print("drink:", dic["drink_name"])
             found_dislike = False
             for dislike in dislikes:
                 if dislike != "" and dislike != " ":
                     curr_ingredients = []
                     for col in ingr_cols:
                         if dic[col] and dic[col] != "":
-                            print('ingr', dic[col])
+                            # print('ingr', dic[col])
                             curr_ingredients.append(dic[col])
                             if dislike in dic[col]:
-                                print("dislike found:", dislike)
+                                # print("dislike found:", dislike)
                                 found_dislike = True
             if found_dislike == False:
                 recs.append((dic["id"], dic["drink_name"], curr_ingredients,
                             dic['picture'], dic['instructions'], dic['tags']))
-    print("recs in not", recs)
+    # print("recs in not", recs)
     return recs
 
 
-def get_recs(likes, dislikes, get_most_similar=True):
+def get_recs(likes, dislikes, get_most_similar):
 
     recs = boolean_not(dislikes)
     acc = []
@@ -138,7 +138,7 @@ def get_recs(likes, dislikes, get_most_similar=True):
         highest_sim.sort(key=lambda x: x[1], reverse=True)
         # highest_sim is the list of drinks and their sim score
 
-    if get_most_similar:
+    if (get_most_similar == '0'):
         highest_sim = highest_sim[:6]
     else:
         highest_sim = highest_sim[-6:]
@@ -152,13 +152,14 @@ def get_recs(likes, dislikes, get_most_similar=True):
         for dislike in input_dislikes:
             if dislike not in inverted_idx[i][0][0]:
                 overlap += 1
+
         liked_percent = overlap / (len(input_likes) + len(input_dislikes))
         merged_percent = round(100 * (j + liked_percent)/2)
 
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3],
                       'merged_score': merged_percent})
-    print("results", result)
+    # print("results", result)
     return json.dumps(result)
 
 
@@ -178,7 +179,9 @@ def drinks_search():
     dislikes_list = [x.strip() for x in dislikes_list]
     input_likes = likes_list
     input_dislikes = dislikes_list
-    return get_recs(likes_list, dislikes_list)
+    most_sim = request.args.get("most_sim")
+    # print("most_sim", most_sim)
+    return get_recs(likes_list, dislikes_list, most_sim)
 
 
 @ app.route("/rocchio")
@@ -236,7 +239,7 @@ def rocchio_search():
             for _ in range(round(new_query_dict[ingr])):
                 new_feedback_liked_ingr.append(ingr)
             new_feedback_disliked_ingr.append(ingr)
-    print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
+    # print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
     return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr)
 
 
@@ -272,13 +275,8 @@ def get_clusters():
     for i in range(len(cluster_dict_inv)):
         drink_name = random.choice(cluster_dict_inv[i])
         acc.append({'drink': drink_name, 'ingredients': inverted_idx[drink_name][0][0], 'picture': inverted_idx[drink_name]
-                    [0][2], 'instructions': inverted_idx[drink_name][0][1], 'tags': inverted_idx[drink_name][0][3]})
-    # print("clusters", cluster_dict)
-    # return json.dumps('test success')
-    # print(acc)
+                    [0][2], 'instructions': inverted_idx[drink_name][0][1], 'tags': inverted_idx[drink_name][0][3], 'merged_score': '100'})
     return json.dumps(acc)
 
 
-if __name__ == '__main__':
-    get_clusters()
 # app.run(debug=True)

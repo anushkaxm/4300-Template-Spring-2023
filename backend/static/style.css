@@ -127,6 +127,29 @@ h2 {
     color: #f1efea;
 }
 
+.digust-button {
+    padding-left: 10px;
+}
+
+#Dissimilar {
+    position: relative;
+    margin-top: 10px;
+    background-color: #c16270;
+    color: #f1efea;
+    padding: 8px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Source Sans Pro';
+    font-weight: lighter;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+#Dissimilar:hover {
+    background-color: #752e3e;
+    color: #f1efea;
+}
+
 
 .input-box {
     border-radius: 15px;

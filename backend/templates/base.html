@@ -38,6 +38,9 @@
                     <div class="random-button">
                         <button id="RandomClusters" onclick="cluster()">Surprise Me!</button>
                     </div>
+                    <div class="disgust-button">
+                        <button id="Dissimilar" onclick="filterText_inv()">Disgust Me</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -128,7 +131,7 @@
             document.getElementsByClassName('results')[0].innerHTML = "";
             current_rec = 0
             document.getElementsByClassName("loader")[0].style.display = "flex";
-            fetch("/drinks_table?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value }).toString())
+            fetch("/drinks_table?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value, most_sim: '0' }).toString())
                 .then((response) =>
                     response.json())
                 .then((data) => {
@@ -155,6 +158,32 @@
             //   .then((data) =>
             //        console.log(data)
             //    );
+        }
+
+        function filterText_inv() {
+            document.getElementsByClassName('results')[0].innerHTML = "";
+            current_rec = 0
+            document.getElementsByClassName("loader")[0].style.display = "flex";
+            fetch("/drinks_table?" + new URLSearchParams({ likes: document.getElementById('filter-text-likes').value, dislikes: document.getElementById('filter-text-dislikes').value, most_sim: '1' }).toString())
+                .then((response) =>
+                    response.json())
+                .then((data) => {
+                    document.getElementsByClassName("loader")[0].style.display = "none";
+                    if (data.length == 0) {
+                        document.getElementsByClassName('no-results')[0].innerHTML =
+                            `<p class='no-drinks'>No drinks found!</p>`;
+                    }
+                    else {
+                        document.getElementsByClassName('no-results')[0].innerHTML = '';
+                        data.forEach(row => {
+                            let tempDiv = document.createElement("div")
+                            tempDiv.innerHTML = drinkTemplate(row, current_rec)
+                            current_rec += 1
+                            if (current_rec < 7) { document.getElementsByClassName('results')[0].appendChild(tempDiv) }
+                        })
+                    }
+                }
+                );
         }
 
         function UseAllIngr() {
