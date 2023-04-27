@@ -17,7 +17,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""  # "password"  # ""
+MYSQL_USER_PASSWORD = "password"  # ""
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -240,7 +240,7 @@ def rocchio_search():
                 new_feedback_liked_ingr.append(ingr)
             new_feedback_disliked_ingr.append(ingr)
     # print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
-    return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr)
+    return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr, '0')
 
 
 @ app.route("/boolean_and")
