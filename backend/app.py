@@ -78,7 +78,6 @@ inverted_idx = build_inverted_index(drinks_data[1:])
 def boolean_not(dislikes):
     recs = []
     empty_dislikes = False
-    print("dislikes", dislikes)
     if (dislikes == [''] or dislikes == [] or dislikes == ""):
         empty_dislikes = True
     if (empty_dislikes):
@@ -92,28 +91,27 @@ def boolean_not(dislikes):
             ), x['picture'], x['instructions'], x['tags']))
     else:
         for dic in drinks_data[1:]:
-            # print("drink:", dic["drink_name"])
             found_dislike = False
             for dislike in dislikes:
                 if dislike != "" and dislike != " ":
                     curr_ingredients = []
                     for col in ingr_cols:
                         if dic[col] and dic[col] != "":
-                            # print('ingr', dic[col])
                             curr_ingredients.append(dic[col])
                             if dislike in dic[col] or dislike in list(map(str.lower, inverted_idx.keys())):
-                                # print("dislike found:", dislike)
                                 found_dislike = True
             if found_dislike == False:
                 recs.append((dic["id"], dic["drink_name"], curr_ingredients,
                             dic['picture'], dic['instructions'], dic['tags']))
-    # print("recs in not", recs)
     return recs
 
 
 def get_recs(likes, dislikes, get_most_similar):
-
+    if type(dislikes) == str:
+        dislikes = dislikes.split(",")
     recs = boolean_not(dislikes)
+    if type(likes) == str:
+        likes = likes.split(",")
     acc = []
     if likes == [''] or likes == []:  # user inputs no likes
         for rec in recs:
@@ -128,6 +126,7 @@ def get_recs(likes, dislikes, get_most_similar):
                         rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
     highest_sim = []
     drink_sim = []
+
     for i in acc:
         project_index_in = i['id']
         for tup in closest_projects(project_index_in, projects_repr_in, documents):
@@ -162,7 +161,6 @@ def get_recs(likes, dislikes, get_most_similar):
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3],
                       'merged_score': merged_stars})
-    # print("results", result)
     return json.dumps(result)
 
 
@@ -183,8 +181,6 @@ def drinks_search():
     input_likes = [likes]
     input_dislikes = [dislikes]
     most_sim = request.args.get("most_sim")
-    # print("most_sim", most_sim)
-    print(input_likes)
     return get_recs(likes, dislikes, most_sim)
 
 
@@ -202,12 +198,10 @@ def rocchio_search():
     if likes == 'false':
         feedback_dislikes[drink_name] = [tags, ingredients]
 
-    # print("feedback", feedback_likes, feedback_dislikes)
     alpha = 1.5
     beta = 1.25
     gamma = 1.75
     new_query_dict = {}
-    # print("inputs", input_likes, input_dislikes)
     feedback_liked_ingrs = []
     for val in feedback_likes.values():
         for ingr in val[1]:
@@ -244,7 +238,6 @@ def rocchio_search():
             for _ in range(round(new_query_dict[ingr])):
                 new_feedback_liked_ingr.append(ingr)
             new_feedback_disliked_ingr.append(ingr)
-    # print("new recs", new_feedback_liked_ingr, new_feedback_disliked_ingr)
     return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr, '0')
 
 
@@ -263,7 +256,6 @@ def boolean_and_search():
         for dic in drinks_data[1:]:
             if (dic['drink_name'] in recs_drink_name):
                 ingr = inverted_idx[dic['drink_name']][0][0].split(', ')
-                print(dic['drink_name'], "ingr", ingr)
                 if len(set(likes) & set(ingr)) == len(likes):
                     acc.append({'drink': dic['drink_name'], 'ingredients': inverted_idx[dic['drink_name']][0][0], 'picture': inverted_idx[dic['drink_name']]
                                 [0][2], 'instructions': inverted_idx[dic['drink_name']][0][1], 'tags': inverted_idx[dic['drink_name']][0][3],
