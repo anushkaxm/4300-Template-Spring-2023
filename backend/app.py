@@ -151,11 +151,11 @@ def get_recs(likes, dislikes, get_most_similar):
             if dislike not in inverted_idx[i][0][0]:
                 overlap += 1
         if (len(input_likes) + len(input_dislikes)) == 0:
-            merged_stars = 0
+            merged_stars = round(5*(j)*0.6, 2)
         else:
 
             liked_percent = overlap / (len(input_likes) + len(input_dislikes))
-            merged_stars = round(5*(j + liked_percent)/2, 2)
+            merged_stars = round(5*(0.7*j + 0.3*liked_percent), 2)
 
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3],
@@ -212,9 +212,11 @@ def rocchio_search():
             new_query_dict[ingr] = 0
     # alpha part of rocchio computation
     list_input_likes = input_likes
-    if len(input_likes) == 1: list_input_likes[0].split(',')
+    if len(input_likes) == 1:
+        list_input_likes[0].split(',')
     list_input_dislikes = input_dislikes
-    if len(input_dislikes) == 1: list_input_dislikes = input_dislikes[0].split(',')
+    if len(input_dislikes) == 1:
+        list_input_dislikes = input_dislikes[0].split(',')
     for ingr in list_input_dislikes:
         new_query_dict[ingr] = alpha
     for ingr in list_input_dislikes:
@@ -237,6 +239,7 @@ def rocchio_search():
             for _ in range(round(new_query_dict[ingr])):
                 new_feedback_liked_ingr.append(ingr)
             new_feedback_disliked_ingr.append(ingr)
+
     return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr, '0')
 
 
