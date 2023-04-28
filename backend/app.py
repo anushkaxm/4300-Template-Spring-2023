@@ -78,7 +78,7 @@ inverted_idx = build_inverted_index(drinks_data[1:])
 def boolean_not(dislikes):
     recs = []
     empty_dislikes = False
-    # print("dislikes", dislikes)
+    print("dislikes", dislikes)
     if (dislikes == [''] or dislikes == [] or dislikes == ""):
         empty_dislikes = True
     if (empty_dislikes):
@@ -250,10 +250,10 @@ def rocchio_search():
 
 @ app.route("/boolean_and")
 def boolean_and_search():
-    likes = [request.args.get("likes")]
-    # likes = [drink.lower().strip() for drink in likes]
-    dislikes = [request.args.get("dislikes")]
-    # dislikes = [drink.lower().strip() for drink in dislikes]
+    likes = request.args.get("likes").split(",")
+    likes = [drink.lower().strip() for drink in likes]
+    dislikes = request.args.get("dislikes").split(",")
+    dislikes = [drink.lower().strip() for drink in dislikes]
     recs = boolean_not(dislikes)
     acc = []
     recs_drink_name = []
@@ -263,7 +263,7 @@ def boolean_and_search():
         for dic in drinks_data[1:]:
             if (dic['drink_name'] in recs_drink_name):
                 ingr = inverted_idx[dic['drink_name']][0][0].split(', ')
-                print("ingr", ingr)
+                print(dic['drink_name'], "ingr", ingr)
                 if len(set(likes) & set(ingr)) == len(likes):
                     acc.append({'drink': dic['drink_name'], 'ingredients': inverted_idx[dic['drink_name']][0][0], 'picture': inverted_idx[dic['drink_name']]
                                 [0][2], 'instructions': inverted_idx[dic['drink_name']][0][1], 'tags': inverted_idx[dic['drink_name']][0][3],
