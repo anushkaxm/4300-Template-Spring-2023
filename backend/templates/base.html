@@ -81,15 +81,19 @@
 
         function drinkTemplate(data, current_rec) {
             current_reacts[current_rec] = [data.drink, data.tags, data.ingredients]
+            var stars = getStars(data.merged_score)
             return `<div class='answer-box'>
                 <div class='drink-body'>
                     <img src=${data.picture} style="width: 40%; height: 100px; float: left; object-fit: contain;">
                     <div class='title-ingredient'>
                         <h3 class='drink-title'  style="padding-left:10px;">${data.drink}</h3>
-                        <p class='drink-desc'>${data.ingredients}</p>
+                        <p class='drink-desc' style="margin-bottom: 40px;">${data.ingredients}</p>
                     </div>
                 </div>
-                <p class='drink-desc'>Similarity: ${data.merged_score}/5 stars</p>
+                <div class="similarity">
+                    <p class='drink-desc' style="margin-bottom:0px;">Similarity:</p>
+                    <span> ${stars}</span>
+                </div>
                 <u class="${data.drink}" id="${current_rec}" onclick='openModal(event)'>Details</u>
                 </div>
                 <div id= "${data.drink}" class="hidden-details" style="display: none">
@@ -306,7 +310,9 @@
                 id = id.slice(0, change + 1) + id.slice(change + 5);
             }
             var elem = document.getElementsByClassName('drinks-five-' + num)[0]
+            console.log(elem)
             elem.remove();
+            console.log(document.getElementsByClassName("modal-content")[0])
             document.getElementsByClassName("modal")[0].style.display = "none";
             document.getElementById(id).style.display = "none";
         }
@@ -515,6 +521,23 @@
                 list += '<li onclick="inputDislikeEnter(event)">' + terms[i] + '</li>';
             }
             res.innerHTML = '<ul>' + list + '</ul>';
+        }
+
+        function getStars(rating) {
+            // Round to nearest half
+            rating = Math.round(rating * 2) / 2;
+            let output = [];
+            // Append all the filled whole stars
+            for (var i = rating; i >= 1; i--)
+                output.push('<i class="fa fa-star" aria-hidden="true" style="color: #c16270; height: 0.9em;"></i>&nbsp;');
+            // If there is a half a star, append it
+            if (i == .5) output.push('<i class="fa fa-star-half-o" aria-hidden="true" style="color: #c16270; height: 0.9em;"></i>&nbsp;');
+            // Fill the empty stars
+            for (let i = (5 - rating); i >= 1; i--)
+                output.push('<i class="fa fa-star-o" aria-hidden="true" style="color: #c16270; height: 0.9em;"></i>&nbsp;');
+
+            return output.join('');
+
         }
 
     </script>

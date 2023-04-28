@@ -10,7 +10,7 @@ html {
     justify-content: start;
     align-items: center;
     flex-direction: column;
-    background-color: #d0b0ae;
+    /* background-color: #d0b0ae; */
     overflow-y: auto;
 }
 
@@ -448,3 +448,22 @@ h2 {
     background: #ece5df;
   }
   
+  /* gradient background code from https://codepen.io/P1N2O/pen/pyBNzX */
+  html{
+	background: linear-gradient(-45deg, #e2b6b4, #d0b0ae, #c78986, #c9818b);
+	background-size: 400% 400%;
+	animation: gradient 15s ease infinite;
+	height: 100vh;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
