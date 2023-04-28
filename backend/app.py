@@ -16,7 +16,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "password"  # ""
+MYSQL_USER_PASSWORD = ""  # "password"  # ""
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -93,14 +93,10 @@ def boolean_not(dislikes):
             found_dislike = False
             for dislike in dislikes:
                 if dislike != "" and dislike != " ":
-                    curr_ingredients = []
-                    for col in ingr_cols:
-                        if dic[col] and dic[col] != "":
-                            curr_ingredients.append(dic[col])
-                            if dislike in dic[col] or dislike in list(inverted_idx.keys()):
-                                found_dislike = True
+                    if dislike in inverted_idx[dic['drink_name'][0][0]] or dislike in dic['drink_name']:
+                        found_dislike = True
             if found_dislike == False:
-                recs.append((dic["id"], dic["drink_name"], curr_ingredients,
+                recs.append((dic["id"], dic["drink_name"], inverted_idx[dic['drink_name']][0][0],
                             dic['picture'], dic['instructions'], dic['tags']))
     return recs
 
@@ -119,12 +115,12 @@ def get_recs(likes, dislikes, get_most_similar):
     drink_sim = []
     highest_sim = []
     recs = boolean_not(dislikes)
-
+    query = ""
     if (dislikes == [''] or dislikes == [] or dislikes == ""):  # no dislikes
         # don't use all recs, maybe try with current likes for drink_names
         # we still have some likes
         set_likes = set(likes)
-        query = ""
+
         for like in set_likes:
             if like in list(inverted_idx.keys()):
                 # is a drink_name
@@ -134,12 +130,6 @@ def get_recs(likes, dislikes, get_most_similar):
                 # get drinks similar from this acc
             else:
                 query += like+" "
-                for tup in closest_projects_to_query(
-                        query, documents, words_compressed, projects_repr_in, get_most_similar):
-                    drink = tup[0]
-                    if (drink not in drink_sim):
-                        highest_sim.append(tuple(tup))
-                        drink_sim.append(drink)
 
     elif likes == [''] or likes == []:  # user inputs no likes:
         # accumulate on whatever user does not dislike in the dataset
@@ -153,15 +143,26 @@ def get_recs(likes, dislikes, get_most_similar):
                 if like in rec[2] or like in list(inverted_idx.keys()):
                     acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': inverted_idx[rec[1]]
                                [0][0], 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
+    if query != "":
+        for tup in closest_projects_to_query(
+                query, documents, words_compressed, projects_repr_in, get_most_similar):
+            drink = tup[0]
+            if (drink not in drink_sim):
+                highest_sim.append(tuple(tup))
+                drink_sim.append(drink)
 
     for i in acc:
         project_index_in = i['id']
         for tup in closest_projects(project_index_in, projects_repr_in, documents, get_most_similar):
             drink = tup[0]
-            if (drink not in drink_sim):
+            if (drink not in drink_sim and drink not in dislikes):
                 highest_sim.append(tuple(tup))
                 drink_sim.append(drink)
-        highest_sim.sort(key=lambda x: x[1], reverse=True)
+
+        if get_most_similar == '0':
+            highest_sim.sort(key=lambda x: x[1], reverse=True)
+        else:
+            highest_sim.sort(key=lambda x: x[1])
         # highest_sim is the list of drinks and their sim score
 
     highest_sim = highest_sim[:6]
