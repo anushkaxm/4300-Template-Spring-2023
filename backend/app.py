@@ -107,11 +107,16 @@ def boolean_not(dislikes):
 
 
 def get_recs(likes, dislikes, get_most_similar):
+
     if type(dislikes) == str:
         dislikes = dislikes.split(",")
-    recs = boolean_not(dislikes)
     if type(likes) == str:
         likes = likes.split(",")
+
+    if sorted(likes) == sorted(dislikes):
+        return json.dumps([])
+
+    recs = boolean_not(dislikes)
     acc = []
     if likes == [''] or likes == []:  # user inputs no likes
         for rec in recs:
@@ -246,6 +251,9 @@ def rocchio_search():
 @ app.route("/boolean_and")
 def boolean_and_search():
     likes = request.args.get("likes").split(",")
+    if (likes == ['']):
+        return json.dumps([])
+
     likes = [drink.lower().strip() for drink in likes]
     dislikes = request.args.get("dislikes").split(",")
     dislikes = [drink.lower().strip() for drink in dislikes]
