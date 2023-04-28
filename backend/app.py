@@ -180,8 +180,8 @@ def drinks_search():
     # dislikes_list = dislikes.split(',')
     # likes_list = [x.strip().lower() for x in likes_list]
     # dislikes_list = [x.strip().lower() for x in dislikes_list]
-    input_likes = likes
-    input_dislikes = dislikes
+    input_likes = [likes]
+    input_dislikes = [dislikes]
     most_sim = request.args.get("most_sim")
     # print("most_sim", most_sim)
     print(input_likes)
@@ -250,10 +250,10 @@ def rocchio_search():
 
 @ app.route("/boolean_and")
 def boolean_and_search():
-    likes = request.args.get("likes").split(",")
-    likes = [drink.lower().strip() for drink in likes]
-    dislikes = request.args.get("dislikes").split(",")
-    dislikes = [drink.lower().strip() for drink in dislikes]
+    likes = [request.args.get("likes")]
+    # likes = [drink.lower().strip() for drink in likes]
+    dislikes = [request.args.get("dislikes")]
+    # dislikes = [drink.lower().strip() for drink in dislikes]
     recs = boolean_not(dislikes)
     acc = []
     recs_drink_name = []

@@ -147,7 +147,6 @@
             document.getElementsByClassName('results')[0].innerHTML = "";
             current_rec = 0
             document.getElementsByClassName("loader")[0].style.display = "flex";
-            console.log(document.getElementById('filter-text-likes').value);
             fetch("/drinks_table?" + new URLSearchParams({ likes: like_chips, dislikes: dislike_chips, most_sim: '0' }).toString())
                 .then((response) =>
                     response.json())
@@ -168,7 +167,7 @@
                     }
                 }
                 );
-            console.log(current_reacts)
+            // console.log(current_reacts)
             //fetch("/clusters?")
             //    .then((response) =>
             //       response.json())
@@ -352,7 +351,6 @@
 
         function inputDislikeEnter(e) {
             if (e.which === 13 || e.type == 'click') {
-                console.log(document.getElementsByClassName('dislike-suggest')[0].innerHTML)
                 document.getElementsByClassName('dislike-suggest')[0].innerHTML = "";
                 var chips = document.getElementsByClassName("dislike-chips")[0];
                 var input = document.getElementsByClassName("dislike-chip-input")[0];
@@ -409,10 +407,7 @@
 
         function chipClickHandler(event) {
             var ingr = (event.currentTarget).getElementsByClassName("chip--text")[0].innerHTML
-            console.log(ingr)
             var like_index = like_chips.indexOf(ingr);
-            console.log(like_index)
-            console.log(like_chips)
             var dislike_index = dislike_chips.indexOf(ingr);
             if (like_index >= 0) {
                 like_chips.splice(like_index, 1);
