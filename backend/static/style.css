@@ -168,36 +168,6 @@ h2 {
     grid-row: 2;
 }
 
-.input-box {
-    border-radius: 15px;
-    border: 1px solid #7c7b7c;
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
-    margin-bottom: 2px;
-    padding: 12px;
-    width: 600px;
-    background-color: #ece5df;
-    height: auto;
-}
-
-.input-box img {
-    height: 20px;
-    width: 20px;
-}
-
-.input-box input {
-    width: 100%;
-    padding-left:10px;
-    font-size: 16px;
-    border: none;
-    outline: 0;
-    background-color: #ece5df;
-    font-family: 'Source Sans Pro';
-    color: #666666;
-    display: inline;
-}
-
 /* end form elements styling */
 
 .empty {
@@ -355,7 +325,6 @@ h2 {
     display: flex;
     width: auto;
     border:solid #752e3e;
-    /* background-color: rgb(193, 98, 112, 0.4); */
     color: #752e3e;
     border-radius: 10px;
     margin: 2px;
@@ -365,7 +334,6 @@ h2 {
   .input-box .dislike-chips .chip {
     display: flex;
     width: auto;
-    /* background-color: rgb(193, 98, 112, 0.4); */
     border:solid #752e3e;
     color: #752e3e;
     border-radius: 10px;
@@ -425,6 +393,37 @@ h2 {
     font-size:0.8em;
     white-space:nowrap;
   }
+
+
+.input-box {
+    border-radius: 15px;
+    border: 1px solid #7c7b7c;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 2px;
+    padding: 12px;
+    width: 600px;
+    background-color: #ece5df;
+    height: auto;
+}
+
+.input-box img {
+    height: 20px;
+    width: 20px;
+}
+
+.input-box input {
+    max-width: 100%;
+    padding-left:10px;
+    font-size: 16px;
+    border: none;
+    outline: 0;
+    background-color: #ece5df;
+    font-family: 'Source Sans Pro';
+    color: #666666;
+    display: inline;
+}
 
 /* dropdown code adapted from https://shorturl.at/oryKV */
   #suggest {
