@@ -98,7 +98,7 @@ def boolean_not(dislikes):
                     for col in ingr_cols:
                         if dic[col] and dic[col] != "":
                             curr_ingredients.append(dic[col])
-                            if dislike in dic[col] or dislike in list(map(str.lower, inverted_idx.keys())):
+                            if dislike in dic[col] or dislike in list(inverted_idx.keys()):
                                 found_dislike = True
             if found_dislike == False:
                 recs.append((dic["id"], dic["drink_name"], curr_ingredients,
@@ -126,7 +126,8 @@ def get_recs(likes, dislikes, get_most_similar):
         set_likes = set(likes)
         for rec in recs:
             for like in set_likes:
-                if like in rec[2] or like in rec[5] or like in list(map(str.lower, inverted_idx.keys())):
+                print(like)
+                if like in rec[2] or like in rec[5] or like in list(inverted_idx.keys()):
                     acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
                         rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
     highest_sim = []
