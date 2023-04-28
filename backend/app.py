@@ -279,7 +279,8 @@ def get_clusters():
 
 
 @ app.route("/cluster_recs")
-def drinks_you_might_like(drink_name):
+def drinks_you_might_like():
+    drink_name = request.args.get("drink")
     with open('drinks_clusters.pkl', 'rb') as f:
         cluster_dict = pickle.load(f)
         cluster_dict_inv = defaultdict(list)
