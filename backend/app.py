@@ -4,9 +4,8 @@ import pickle
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
-from buildrecs import closest_projects, vect, read_data
+from buildrecs import closest_projects, vect, read_data, closest_projects_to_query
 from collections import defaultdict
-# from csv import DictReader
 import random
 
 # ROOT_PATH for linking with all your files.
@@ -70,7 +69,7 @@ ingr_cols = ["ingredients1", "ingredients2", "ingredients3", "ingredients4", "in
 data = mysql_engine.query_selector(query_sql)
 
 drinks_data = [dict(zip(keys, i)) for i in data]
-projects_repr_in = vect(drinks_data[1:])
+words_compressed, projects_repr_in = vect(drinks_data[1:])
 documents = read_data(drinks_data[1:])
 inverted_idx = build_inverted_index(drinks_data[1:])
 
@@ -113,12 +112,37 @@ def get_recs(likes, dislikes, get_most_similar):
     if type(likes) == str:
         likes = likes.split(",")
 
-    if sorted(likes) == sorted(dislikes):
+    if sorted(likes) == sorted(dislikes):  # both can't be empty or equal
         return json.dumps([])
 
-    recs = boolean_not(dislikes)
     acc = []
-    if likes == [''] or likes == []:  # user inputs no likes
+    drink_sim = []
+    highest_sim = []
+    recs = boolean_not(dislikes)
+
+    if (dislikes == [''] or dislikes == [] or dislikes == ""):  # no dislikes
+        # don't use all recs, maybe try with current likes for drink_names
+        # we still have some likes
+        set_likes = set(likes)
+        query = ""
+        for like in set_likes:
+            if like in list(inverted_idx.keys()):
+                # is a drink_name
+                acc.append({'id': list(inverted_idx.keys()).index(like), 'drink': like, 'ingredients': inverted_idx[like]
+                            [0][0], 'picture': inverted_idx[like]
+                            [0][2], 'instructions': inverted_idx[like][0][1], 'tags': inverted_idx[like][0][3]})
+                # get drinks similar from this acc
+            else:
+                query += like+" "
+                for tup in closest_projects_to_query(
+                        query, documents, words_compressed, projects_repr_in, get_most_similar):
+                    drink = tup[0]
+                    if (drink not in drink_sim):
+                        highest_sim.append(tuple(tup))
+                        drink_sim.append(drink)
+
+    elif likes == [''] or likes == []:  # user inputs no likes:
+        # accumulate on whatever user does not dislike in the dataset
         for rec in recs:
             acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
                 rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
@@ -126,15 +150,13 @@ def get_recs(likes, dislikes, get_most_similar):
         set_likes = set(likes)
         for rec in recs:
             for like in set_likes:
-                print(like)
-                if like in rec[2] or like in rec[5] or like in list(inverted_idx.keys()):
-                    acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
-                        rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
-    highest_sim = []
-    drink_sim = []
+                if like in rec[2] or like in list(inverted_idx.keys()):
+                    acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': inverted_idx[rec[1]]
+                               [0][0], 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
+
     for i in acc:
         project_index_in = i['id']
-        for tup in closest_projects(project_index_in, projects_repr_in, documents):
+        for tup in closest_projects(project_index_in, projects_repr_in, documents, get_most_similar):
             drink = tup[0]
             if (drink not in drink_sim):
                 highest_sim.append(tuple(tup))
@@ -142,10 +164,7 @@ def get_recs(likes, dislikes, get_most_similar):
         highest_sim.sort(key=lambda x: x[1], reverse=True)
         # highest_sim is the list of drinks and their sim score
 
-    if (get_most_similar == '0'):
-        highest_sim = highest_sim[:6]
-    else:
-        highest_sim = highest_sim[-6:]
+    highest_sim = highest_sim[:6]
 
     result = []
     for i, j in highest_sim:
