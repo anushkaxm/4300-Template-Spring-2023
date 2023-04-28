@@ -176,15 +176,16 @@ def drinks_search():
     global input_likes, input_dislikes
     likes = request.args.get("likes")
     dislikes = request.args.get("dislikes")
-    likes_list = likes.split(',')
-    dislikes_list = dislikes.split(',')
-    likes_list = [x.strip().lower() for x in likes_list]
-    dislikes_list = [x.strip().lower() for x in dislikes_list]
-    input_likes = likes_list
-    input_dislikes = dislikes_list
+    # likes_list = likes.split(',')
+    # dislikes_list = dislikes.split(',')
+    # likes_list = [x.strip().lower() for x in likes_list]
+    # dislikes_list = [x.strip().lower() for x in dislikes_list]
+    input_likes = likes
+    input_dislikes = dislikes
     most_sim = request.args.get("most_sim")
     # print("most_sim", most_sim)
-    return get_recs(likes_list, dislikes_list, most_sim)
+    print(input_likes)
+    return get_recs(likes, dislikes, most_sim)
 
 
 @ app.route("/rocchio")

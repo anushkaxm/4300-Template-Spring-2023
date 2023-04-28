@@ -154,17 +154,31 @@ h2 {
     color: #f1efea;
 }
 
+.input-box-container{
+    display:grid;
+}
+
+#likes, .like-suggest{
+    grid-column: 1;
+    grid-row: 1;
+}
+
+#dislikes, .dislike-suggest{
+    grid-column: 1;
+    grid-row: 2;
+}
 
 .input-box {
     border-radius: 15px;
     border: 1px solid #7c7b7c;
     display: flex;
     align-items: center;
-    margin-top: 20px;
-    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-bottom: 2px;
     padding: 12px;
     width: 600px;
     background-color: #ece5df;
+    height: auto;
 }
 
 .input-box img {
@@ -174,13 +188,14 @@ h2 {
 
 .input-box input {
     width: 100%;
-    margin-left: 10px;
+    padding-left:10px;
     font-size: 16px;
     border: none;
     outline: 0;
     background-color: #ece5df;
     font-family: 'Source Sans Pro';
     color: #666666;
+    display: inline;
 }
 
 /* end form elements styling */
@@ -331,3 +346,105 @@ h2 {
     margin-top: 55px;
     animation: rotate 1000ms infinite linear;
 }
+
+/* end loader code */
+
+/* input chip code */
+
+.input-box .like-chips .chip {
+    display: flex;
+    width: auto;
+    border:solid #752e3e;
+    /* background-color: rgb(193, 98, 112, 0.4); */
+    color: #752e3e;
+    border-radius: 10px;
+    margin: 2px;
+    font-family: 'Source Sans Pro';
+    font-weight: lighter;
+  }
+  .input-box .dislike-chips .chip {
+    display: flex;
+    width: auto;
+    /* background-color: rgb(193, 98, 112, 0.4); */
+    border:solid #752e3e;
+    color: #752e3e;
+    border-radius: 10px;
+    margin: 2px;
+    font-family: 'Source Sans Pro';
+    font-weight: lighter;
+  }
+  .input-box .like-chips .chip{
+    float: left;
+  }
+  .input-box .dislike-chips .chip{
+    float: left;
+  }
+  
+  .input-box .like-chips .chip .chip--button {
+    padding: 8px 8px 4px 8px;
+    cursor: pointer;
+    color: #752e3e;
+    display: inline-block;
+    font-family: 'Source Sans Pro';
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    font-weight: lighter;
+    font-size:0.8em;
+  }
+  .input-box .like-chips .chip .chip--button:hover {
+    background-color: #752e3e;
+    color:#f1efea;
+  }
+  .input-box .like-chips .chip .chip--text {
+    padding: 8px 4px 8px 8px;
+    display: inline-block;
+    font-size:0.8em;
+    pointer-events: none;
+    white-space:nowrap;
+  }
+
+  .input-box .dislike-chips .chip .chip--button {
+    padding: 8px 8px 4px 8px;
+    cursor: pointer;
+    color: #752e3e;
+    display: inline-block;
+    font-family: 'Source Sans Pro';
+    font-size:0.8em;
+    font-weight: lighter;
+    border-top-right-radius:8px;
+    border-bottom-right-radius: 8px;
+  }
+  .input-box .dislike-chips .chip .chip--button:hover {
+    background-color: #752e3e;
+    color:#f1efea;
+  }
+  .input-box .dislike-chips .chip .chip--text {
+    padding: 8px 4px 8px 8px;
+    display: inline-block;
+    pointer-events: none;
+    font-size:0.8em;
+    white-space:nowrap;
+  }
+
+/* dropdown code adapted from https://shorturl.at/oryKV */
+  #suggest {
+    border: none;
+    border-radius: 15px;
+    padding: 3px;
+    overflow-y: scroll;
+    max-height: 100px;
+  }
+  #suggest ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-family: 'Source Sans Pro';
+    color: #7c7b7c;
+  }
+  #suggest ul li {
+    padding: 5px 5px;
+  }
+  #suggest ul li:hover {
+    background: #ece5df;
+  }
+  
