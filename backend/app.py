@@ -126,7 +126,6 @@ def get_recs(likes, dislikes, get_most_similar):
                         rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
     highest_sim = []
     drink_sim = []
-
     for i in acc:
         project_index_in = i['id']
         for tup in closest_projects(project_index_in, projects_repr_in, documents):
@@ -192,7 +191,6 @@ def rocchio_search():
     drink_name = request.args.get("drink")
     ingredients = request.args.get("ingrs").split(",")
     ingredients = [x.strip().lower() for x in ingredients]
-
     if likes == 'true':
         feedback_likes[drink_name] = [tags, ingredients]
     if likes == 'false':
@@ -212,13 +210,15 @@ def rocchio_search():
         for ingr in val[1]:
             feedback_disliked_ingrs.append(ingr)
             new_query_dict[ingr] = 0
-
     # alpha part of rocchio computation
-    for ingr in input_likes:
+    list_input_likes = input_likes
+    if len(input_likes) == 1: list_input_likes[0].split(',')
+    list_input_dislikes = input_dislikes
+    if len(input_dislikes) == 1: list_input_dislikes = input_dislikes[0].split(',')
+    for ingr in list_input_dislikes:
         new_query_dict[ingr] = alpha
-    for ingr in input_dislikes:
+    for ingr in list_input_dislikes:
         new_query_dict[ingr] = -1 * alpha
-
     # beta part of rocchio computation
     total_rel_drinks = len(feedback_likes) + 1
     for ingr in feedback_liked_ingrs:
@@ -227,7 +227,6 @@ def rocchio_search():
     total_nonrel_drinks = len(feedback_dislikes) + 1
     for ingr in feedback_disliked_ingrs:
         new_query_dict[ingr] -= gamma * (1/total_nonrel_drinks)
-
     new_feedback_liked_ingr = []
     new_feedback_disliked_ingr = []
     for ingr in new_query_dict:
