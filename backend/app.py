@@ -17,7 +17,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "password"  # ""
+MYSQL_USER_PASSWORD = ""  # "password"  #
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -152,11 +152,13 @@ def get_recs(likes, dislikes, get_most_similar):
             if dislike not in inverted_idx[i][0][0]:
                 overlap += 1
         if (len(input_likes) + len(input_dislikes)) == 0:
-            merged_stars = 0
+            merged_stars = round(5*(j)*0.6, 2)
         else:
 
             liked_percent = overlap / (len(input_likes) + len(input_dislikes))
-            merged_stars = round(5*(j + liked_percent)/2, 2)
+            merged_stars = round(5*(0.7*j + 0.3*liked_percent), 2)
+
+        print(i, merged_stars)
 
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3],
@@ -238,6 +240,7 @@ def rocchio_search():
             for _ in range(round(new_query_dict[ingr])):
                 new_feedback_liked_ingr.append(ingr)
             new_feedback_disliked_ingr.append(ingr)
+    print(new_feedback_liked_ingr, new_feedback_disliked_ingr)
     return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr, '0')
 
 
