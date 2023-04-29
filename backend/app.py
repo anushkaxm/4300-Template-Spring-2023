@@ -51,7 +51,7 @@ def drinks_search():
     print(getnonalc)
     data = runquery(getnonalc)
     drinks_data = [dict(zip(keys, i)) for i in data]
-    words_compressed, projects_repr_in = vect(drinks_data[1:])
+    words_compressed, projects_repr_in = vect(drinks_data[1:], getnonalc)
     documents = read_data(drinks_data[1:])
     inverted_idx = build_inverted_index(drinks_data[1:])
     return get_recs(likes, dislikes, most_sim)
@@ -86,7 +86,7 @@ def build_inverted_index(dict_reader):
 def runquery(getnonalc):
     tag = 'nonalcoholic'
     if getnonalc == '1':
-        query_sql = f"""select * from drinks_table where tags like '%%{tag.lower()}%%';"""
+        query_sql = f"""SELECT * FROM drinks_table WHERE tags LIKE '%%{tag.lower()}%%';"""
     else:
         query_sql = f"""SELECT * FROM drinks_table;"""
     data = mysql_engine.query_selector(query_sql)

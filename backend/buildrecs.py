@@ -19,8 +19,12 @@ def read_data(rec):
     return doc
 
 
-def vect(rec):
+def vect(rec, getnonalc):
     documents = read_data(rec)
+    if getnonalc == '1':  # only non-alcoholic drinks here, so dataset is much smaller
+        k = 3
+    else:
+        k = 80
     vectorizer = TfidfVectorizer(stop_words='english', max_df=.7, min_df=50)
     td_matrix = vectorizer.fit_transform(x[1] for x in documents)
     # print(td_matrix.shape)
@@ -28,7 +32,7 @@ def vect(rec):
     # do SVD with a very large k (we usually use 100), just for the sake of getting many sorted singular values (aka importances)
     # u, s, v_trans = svds(td_matrix, k=6)
 
-    docs_compressed, s, words_compressed = svds(td_matrix, k=80)
+    docs_compressed, s, words_compressed = svds(td_matrix, k)
     words_compressed = words_compressed.transpose()
 
     # word_to_index = vectorizer.vocabulary_
