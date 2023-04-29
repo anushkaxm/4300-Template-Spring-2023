@@ -58,6 +58,10 @@
                         <button id="Dissimilar" onclick="filterText_inv()">Disgust Me!</button>
                     </div>
                 </div>
+                <div> <label class="container">Only include non-alcoholic drinks
+                        <input type="checkbox" id="checkbox" />
+                        <span class="checkmark"></span>
+                    </label></div>
             </div>
         </div>
         <div class="results-container">
@@ -162,11 +166,23 @@
             document.getElementById('filter-text-val').focus()
         }
 
+        function filterNonAlcoholicOnly() {
+            let checkbox = document.getElementById("checkbox");
+            if (checkbox.checked) {
+                console.log('true, pass test')
+                return '1'
+            } else {
+                console.log('test failed')
+                return '0'
+            }
+        }
+
         function filterText() {
             document.getElementsByClassName('results')[0].innerHTML = "";
             current_rec = 0
             document.getElementsByClassName("loader")[0].style.display = "flex";
-            fetch("/drinks_table?" + new URLSearchParams({ likes: like_chips, dislikes: dislike_chips, most_sim: '0' }).toString())
+
+            fetch("/drinks_table?" + new URLSearchParams({ likes: like_chips, dislikes: dislike_chips, most_sim: '0', getnonalc: filterNonAlcoholicOnly() }).toString())
                 .then((response) =>
                     response.json())
                 .then((data) => {

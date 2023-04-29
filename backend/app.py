@@ -16,7 +16,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "password"  # ""
+MYSQL_USER_PASSWORD = ""  # "password"  #
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -35,10 +35,37 @@ CORS(app)
 # there's a much better and cleaner way to do this
 
 
+@ app.route("/drinks_table")
+def drinks_search():
+    global input_likes, input_dislikes, drinks_data, words_compressed, projects_repr_in, documents, inverted_idx
+    likes = request.args.get("likes")
+    dislikes = request.args.get("dislikes")
+    # likes_list = likes.split(',')
+    # dislikes_list = dislikes.split(',')
+    # likes_list = [x.strip().lower() for x in likes_list]
+    # dislikes_list = [x.strip().lower() for x in dislikes_list]
+    input_likes = [likes]
+    input_dislikes = [dislikes]
+    most_sim = request.args.get("most_sim")
+    getnonalc = request.args.get("getnonalc")
+    print(getnonalc)
+    data = runquery(getnonalc)
+    drinks_data = [dict(zip(keys, i)) for i in data]
+    words_compressed, projects_repr_in = vect(drinks_data[1:])
+    documents = read_data(drinks_data[1:])
+    inverted_idx = build_inverted_index(drinks_data[1:])
+    return get_recs(likes, dislikes, most_sim)
+
+
 feedback_likes = {}
 feedback_dislikes = {}
 input_likes = []
 input_dislikes = []
+drinks_data = []
+words_compressed = []
+projects_repr_in = []
+documents = []
+inverted_idx = []
 
 
 def build_inverted_index(dict_reader):
@@ -56,7 +83,15 @@ def build_inverted_index(dict_reader):
     return documents
 
 
-query_sql = f"""SELECT * FROM drinks_table;"""
+def runquery(getnonalc):
+
+    if getnonalc == '1':
+        query_sql = f"""select * from drinks_table where tags like "nonalcoholic";"""
+    else:
+        query_sql = f"""SELECT * FROM drinks_table;"""
+    data = mysql_engine.query_selector(query_sql)
+    return data
+
 
 keys = ["id", "drink_name", "instructions", "steps", "picture", "tags", "ingredients1", "quantity1", "ingredients2",
         "quantity2", "ingredients3", "quantity3", "ingredients4", "quantity4", "ingredients5", "quantity5",
@@ -65,13 +100,6 @@ keys = ["id", "drink_name", "instructions", "steps", "picture", "tags", "ingredi
 
 ingr_cols = ["ingredients1", "ingredients2", "ingredients3", "ingredients4", "ingredients5", "ingredients6", "ingredients7",
              "ingredients8", "ingredients9", "ingredients10", "ingredients11", "ingredients12"]
-
-data = mysql_engine.query_selector(query_sql)
-
-drinks_data = [dict(zip(keys, i)) for i in data]
-words_compressed, projects_repr_in = vect(drinks_data[1:])
-documents = read_data(drinks_data[1:])
-inverted_idx = build_inverted_index(drinks_data[1:])
 
 
 def boolean_not(dislikes):
@@ -192,21 +220,6 @@ def get_recs(likes, dislikes, get_most_similar):
 @ app.route("/")
 def home():
     return render_template('base.html', title="sample html")
-
-
-@ app.route("/drinks_table")
-def drinks_search():
-    global input_likes, input_dislikes
-    likes = request.args.get("likes")
-    dislikes = request.args.get("dislikes")
-    # likes_list = likes.split(',')
-    # dislikes_list = dislikes.split(',')
-    # likes_list = [x.strip().lower() for x in likes_list]
-    # dislikes_list = [x.strip().lower() for x in dislikes_list]
-    input_likes = [likes]
-    input_dislikes = [dislikes]
-    most_sim = request.args.get("most_sim")
-    return get_recs(likes, dislikes, most_sim)
 
 
 @ app.route("/rocchio")
