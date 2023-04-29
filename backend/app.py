@@ -84,9 +84,9 @@ def build_inverted_index(dict_reader):
 
 
 def runquery(getnonalc):
-
+    tag = 'nonalcoholic'
     if getnonalc == '1':
-        query_sql = f"""select * from drinks_table where tags like "nonalcoholic";"""
+        query_sql = f"""select * from drinks_table where tags like '%%{tag.lower()}%%';"""
     else:
         query_sql = f"""SELECT * FROM drinks_table;"""
     data = mysql_engine.query_selector(query_sql)
