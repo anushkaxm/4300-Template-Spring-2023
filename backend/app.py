@@ -16,7 +16,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""  # "password"  #
+MYSQL_USER_PASSWORD = #"password"  #
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -48,9 +48,13 @@ def drinks_search():
     input_dislikes = [dislikes]
     most_sim = request.args.get("most_sim")
     getnonalc = request.args.get("getnonalc")
-    print(getnonalc)
     data = runquery(getnonalc)
     drinks_data = [dict(zip(keys, i)) for i in data]
+    id_num = 0
+    if getnonalc == '1':
+        for data in drinks_data:
+            data['id'] = id_num
+            id_num += 1
     words_compressed, projects_repr_in = vect(drinks_data[1:], getnonalc)
     documents = read_data(drinks_data[1:])
     inverted_idx = build_inverted_index(drinks_data[1:])
@@ -178,7 +182,7 @@ def get_recs(likes, dislikes, get_most_similar):
             if (drink not in drink_sim):
                 highest_sim.append(tuple(tup))
                 drink_sim.append(drink)
-
+    print("acc", acc)
     for i in acc:
         project_index_in = i['id']
         for tup in closest_projects(project_index_in, projects_repr_in, documents, get_most_similar):
