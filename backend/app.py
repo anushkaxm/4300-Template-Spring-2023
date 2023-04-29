@@ -148,7 +148,9 @@ def get_recs(likes, dislikes, get_most_similar):
     highest_sim = []
     recs = boolean_not(dislikes)
     query = ""
+    emptydislikes = False
     if (dislikes == [''] or dislikes == [] or dislikes == ""):  # no dislikes
+        emptydislikes = True
         # don't use all recs, maybe try with current likes for drink_names
         # we still have some likes
         set_likes = set(likes)
@@ -167,7 +169,7 @@ def get_recs(likes, dislikes, get_most_similar):
         # accumulate on whatever user does not dislike in the dataset
         for rec in recs:
             acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': inverted_idx[rec[1]]
-                               [0][0], 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
+                        [0][0], 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
     else:
         set_likes = set(likes)
         for rec in recs:
@@ -190,16 +192,38 @@ def get_recs(likes, dislikes, get_most_similar):
                 highest_sim.append(tuple(tup))
                 drink_sim.append(drink)
 
-        if get_most_similar == '0':
-            highest_sim.sort(key=lambda x: x[1], reverse=True)
-        else:
-            highest_sim.sort(key=lambda x: x[1])
-        # highest_sim is the list of drinks and their sim score
+    # now do cosine similarity with all the dislikes again
+    lowest_sim = []
+    dislikes_acc = []
+    dislikes_drinks = []
+    if (not emptydislikes):
+        for rec in recs:
+            dislikes_acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': inverted_idx[rec[1]]
+                                 [0][0], 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
 
-    highest_sim = highest_sim[:6]
+        for i in dislikes_acc:
+            project_index_in = i['id']
+            for tup in closest_projects(project_index_in, projects_repr_in, documents, get_most_similar):
+                lowest_sim.append(tuple(tup))
+                dislikes_drinks.append(tup[0])
+
+    drink_list_with_scores = []
+    for i, j in highest_sim:
+        if i in dislikes_drinks:
+            # remove dislikes from highest similarity list
+            highest_sim.remove((i, j))
+
+    if get_most_similar == '0':
+        highest_sim.sort(key=lambda x: x[1], reverse=True)
+        drink_list_with_scores = highest_sim[:6]
+    else:
+        lowest_sim.sort(key=lambda x: x[1])
+        drink_list_with_scores = lowest_sim[:6]
+
+    # highest_sim = highest_sim[:6]
 
     result = []
-    for i, j in highest_sim:
+    for i, j in drink_list_with_scores:
         overlap = 0
         for like in input_likes:
             if like in inverted_idx[i][0][0]:
