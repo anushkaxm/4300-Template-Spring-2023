@@ -50,7 +50,7 @@ def drinks_search():
     getnonalc = request.args.get("getnonalc")
     data = runquery(getnonalc)
     drinks_data = [dict(zip(keys, i)) for i in data]
-    id_num = 0
+    id_num = -1
     if getnonalc == '1':
         for data in drinks_data:
             data['id'] = id_num
@@ -166,8 +166,8 @@ def get_recs(likes, dislikes, get_most_similar):
     elif likes == [''] or likes == []:  # user inputs no likes:
         # accumulate on whatever user does not dislike in the dataset
         for rec in recs:
-            acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': ', '.join(
-                rec[2]), 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
+            acc.append({'id': rec[0], 'drink': rec[1], 'ingredients': inverted_idx[rec[1]]
+                               [0][0], 'picture': rec[3], 'instructions': rec[4], 'tags': rec[5]})
     else:
         set_likes = set(likes)
         for rec in recs:
@@ -182,7 +182,6 @@ def get_recs(likes, dislikes, get_most_similar):
             if (drink not in drink_sim):
                 highest_sim.append(tuple(tup))
                 drink_sim.append(drink)
-    print("acc", acc)
     for i in acc:
         project_index_in = i['id']
         for tup in closest_projects(project_index_in, projects_repr_in, documents, get_most_similar):
@@ -282,7 +281,6 @@ def rocchio_search():
             for _ in range(round(new_query_dict[ingr])):
                 new_feedback_liked_ingr.append(ingr)
             new_feedback_disliked_ingr.append(ingr)
-
     return get_recs(new_feedback_liked_ingr, new_feedback_disliked_ingr, '0')
 
 
