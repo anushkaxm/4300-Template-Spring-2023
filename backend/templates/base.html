@@ -216,7 +216,7 @@
             document.getElementsByClassName('results')[0].innerHTML = "";
             current_rec = 0
             document.getElementsByClassName("loader")[0].style.display = "flex";
-            fetch("/drinks_table?" + new URLSearchParams({ likes: like_chips, dislikes: dislike_chips, most_sim: '1' }).toString())
+            fetch("/drinks_table?" + new URLSearchParams({ likes: like_chips, dislikes: dislike_chips, most_sim: '1', getnonalc: filterNonAlcoholicOnly() }).toString())
                 .then((response) =>
                     response.json())
                 .then((data) => {
@@ -242,7 +242,7 @@
             document.getElementsByClassName('results')[0].innerHTML = "";
             current_rec = 0
             document.getElementsByClassName("loader")[0].style.display = "flex";
-            fetch("/boolean_and?" + new URLSearchParams({ likes: like_chips, dislikes: dislike_chips }).toString())
+            fetch("/boolean_and?" + new URLSearchParams({ likes: like_chips, dislikes: dislike_chips, getnonalc: filterNonAlcoholicOnly() }).toString())
                 .then((response) =>
                     response.json())
                 .then((data) => {

@@ -16,7 +16,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "password"  # ""
+MYSQL_USER_PASSWORD = ""  # "password"  #
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -284,6 +284,12 @@ def rocchio_search():
 
 @ app.route("/boolean_and")
 def boolean_and_search():
+    getnonalc = request.args.get("getnonalc")
+    data = runquery(getnonalc)
+    drinks_data = [dict(zip(keys, i)) for i in data]
+    # words_compressed, projects_repr_in = vect(drinks_data[1:])
+    # documents = read_data(drinks_data[1:])
+    inverted_idx = build_inverted_index(drinks_data[1:])
     likes = request.args.get("likes").split(",")
     if (likes == ['']):
         return json.dumps([])
@@ -310,6 +316,11 @@ def boolean_and_search():
 
 @ app.route("/clusters")
 def get_clusters():
+    data = runquery('0')
+    drinks_data = [dict(zip(keys, i)) for i in data]
+    # words_compressed, projects_repr_in = vect(drinks_data[1:])
+    # documents = read_data(drinks_data[1:])
+    inverted_idx = build_inverted_index(drinks_data[1:])
     with open('drinks_clusters.pkl', 'rb') as f:
         cluster_dict = pickle.load(f)
     acc = []
@@ -325,6 +336,11 @@ def get_clusters():
 
 @ app.route("/cluster_recs")
 def drinks_you_might_like():
+    data = runquery('0')
+    drinks_data = [dict(zip(keys, i)) for i in data]
+    # words_compressed, projects_repr_in = vect(drinks_data[1:])
+    # documents = read_data(drinks_data[1:])
+    inverted_idx = build_inverted_index(drinks_data[1:])
     drink_name = request.args.get("drink")
     with open('drinks_clusters.pkl', 'rb') as f:
         cluster_dict = pickle.load(f)
