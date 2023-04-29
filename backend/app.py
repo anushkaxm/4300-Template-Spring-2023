@@ -16,7 +16,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "password"  #
+MYSQL_USER_PASSWORD = ""  # "password"  #
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "drinksdb"
 
@@ -217,8 +217,11 @@ def get_recs(likes, dislikes, get_most_similar):
         highest_sim.sort(key=lambda x: x[1], reverse=True)
         drink_list_with_scores = highest_sim[:6]
     else:
-        lowest_sim.sort(key=lambda x: x[1])
-        drink_list_with_scores = lowest_sim[:6]
+        if lowest_sim != []:
+            lowest_sim.sort(key=lambda x: x[1])
+            drink_list_with_scores = lowest_sim[:6]
+        else:
+            drink_list_with_scores = highest_sim[:6]
 
     # highest_sim = highest_sim[:6]
 
@@ -234,9 +237,10 @@ def get_recs(likes, dislikes, get_most_similar):
         if (len(input_likes) + len(input_dislikes)) == 0:
             merged_stars = round(5*(j)*0.6, 2)
         else:
-
             liked_percent = overlap / (len(input_likes) + len(input_dislikes))
             merged_stars = round(5*(0.7*j + 0.3*liked_percent), 2)
+            if merged_stars < 0:
+                merged_stars = 0
 
         result.append({'drink': i, 'ingredients': inverted_idx[i][0][0], 'picture': inverted_idx[i]
                       [0][2], 'instructions': inverted_idx[i][0][1], 'tags': inverted_idx[i][0][3],
