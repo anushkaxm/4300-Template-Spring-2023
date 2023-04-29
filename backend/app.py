@@ -221,6 +221,7 @@ def get_recs(likes, dislikes, get_most_similar):
             lowest_sim.sort(key=lambda x: x[1])
             drink_list_with_scores = lowest_sim[:6]
         else:
+            highest_sim.sort(key=lambda x: x[1])
             drink_list_with_scores = highest_sim[:6]
 
     # highest_sim = highest_sim[:6]
@@ -317,6 +318,11 @@ def boolean_and_search():
     getnonalc = request.args.get("getnonalc")
     data = runquery(getnonalc)
     drinks_data = [dict(zip(keys, i)) for i in data]
+    id_num = -1
+    if getnonalc == '1':
+        for data in drinks_data:
+            data['id'] = id_num
+            id_num += 1
     # words_compressed, projects_repr_in = vect(drinks_data[1:])
     # documents = read_data(drinks_data[1:])
     inverted_idx = build_inverted_index(drinks_data[1:])
