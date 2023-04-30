@@ -223,7 +223,6 @@ label {
 
 /* On mouse-over, add a grey background color */
 .container:hover input~.checkmark {
-    border: none;
     background-color: #752e3e;
 }
 
