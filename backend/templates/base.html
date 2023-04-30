@@ -23,7 +23,7 @@
                         <div class="input-box" id="likes" onclick="likeOnClick()" onblur="likeOnBlur()"
                             onkeypress="return inputLikeEnter(event)" onkeyup="showLikeResults(event)">
                             <img src="{{ url_for('static', filename='images/cocktail.png') }}" />
-                            <div class="input-inside">
+                            <div class="input-inside" id="like-input-inside">
                                 <div class="like-chips"></div>
                                 <input placeholder="Likes" class="like-chip-input" id="filter-text-likes">
                             </div>
@@ -34,13 +34,19 @@
                         <div class="input-box" id="dislikes" onclick="dislikeOnClick()" onblur="dislikeOnBlur()"
                             onkeypress="return inputDislikeEnter(event)" onkeyup="showDislikeResults(event)">
                             <img src="{{ url_for('static', filename='images/cocktail.png') }}" />
-                            <div class="'input-inside">
+                            <div class="input-inside" id="dislike-input-inside">
                                 <div class="dislike-chips"></div>
                                 <input placeholder="Dislikes" class="dislike-chip-input" id="filter-text-dislikes">
                             </div>
                         </div>
                         <div id="suggest" class="dislike-suggest"></div>
                     </div>
+                </div>
+                <div>
+                    <label class="container">Only include non-alcoholic drinks
+                        <input type="checkbox" id="checkbox" />
+                        <span class="checkmark"></span>
+                    </label>
                 </div>
                 <div class="buttons">
                     <div class="submit-button">
@@ -58,10 +64,6 @@
                         <button id="Dissimilar" onclick="filterText_inv()">Disgust Me!</button>
                     </div>
                 </div>
-                <div> <label class="container">Only include non-alcoholic drinks
-                        <input type="checkbox" id="checkbox" />
-                        <span class="checkmark"></span>
-                    </label></div>
             </div>
         </div>
         <div class="results-container">
@@ -98,15 +100,15 @@
                         <p class='drink-desc' style="margin-bottom: 40px;">${data.ingredients}</p>
                     </div>
                 </div>
-                <div class="similarity">
-                    <p class='drink-desc' style="margin-bottom:0px;">Similarity:</p>
+                <div class="similarity" style="margin-bottom:5px;">
+                    <p class='drink-desc' style="margin-bottom:2px;">Similarity:</p>
                     <span> ${stars}</span>
                 </div>
                 <u class="${data.drink}" id="${current_rec}" onclick='openModal(event)'>Details</u>
                 </div>
                 <div id= "${data.drink}" class="hidden-details" style="display: none">
                     <div class="desc-body" style="display: flex">
-                        <div class="modal-body" style"float:left; padding-right:10px;">
+                        <div class="modal-body" style"float:left; margin-right:10px;">
                             <h3 id="${current_rec}" class='drink-title'>${data.drink}</h3>
                             <p class='drink-desc'>${data.ingredients}</p>
                             <p class='drink-desc'>${data.instructions}</p>
@@ -122,7 +124,6 @@
         }
 
         function recTemplate(data) {
-            console.log()
             return `
                 <img src=${data.picture} style="width:100px;height:100px; object-fit:contain;">
                 <p style="width:100px; overflow-x: scroll">${data.drink}</p>`
@@ -202,14 +203,6 @@
                     }
                 }
                 );
-            // console.log(current_reacts)
-            //fetch("/clusters?")
-            //    .then((response) =>
-            //       response.json())
-            //   .then((data) =>
-            //        console.log(data)
-            //    );
-            console.log()
         }
 
         function filterText_inv() {
@@ -254,7 +247,6 @@
                     else {
                         document.getElementsByClassName('no-results')[0].innerHTML = '';
                         data.forEach(row => {
-                            // console.log("row", row)
                             let tempDiv = document.createElement("div")
                             tempDiv.innerHTML = drinkTemplate(row, current_rec)
                             current_rec += 1
@@ -281,7 +273,6 @@
                     else {
                         document.getElementsByClassName('no-results')[0].innerHTML = '';
                         data.forEach(row => {
-                            // console.log("row", row)
                             let tempDiv = document.createElement("div")
                             tempDiv.innerHTML = drinkTemplate(row, current_rec)
                             current_rec += 1
@@ -326,15 +317,12 @@
             var idx = document.getElementsByClassName("modal-content")[0].getElementsByClassName("drink-title").length;
             var id = document.getElementsByClassName("modal-content")[0].getElementsByClassName("drink-title")[idx - 1].innerHTML;
             var num = document.getElementsByClassName("modal-content")[0].getElementsByClassName("drink-title")[idx - 1].id;
-            console.log(num);
             var change = id.indexOf('&');
             if (change != -1) {
                 id = id.slice(0, change + 1) + id.slice(change + 5);
             }
             var elem = document.getElementsByClassName('drinks-five-' + num)[0]
-            console.log(elem)
             elem.remove();
-            console.log(document.getElementsByClassName("modal-content")[0])
             document.getElementsByClassName("modal")[0].style.display = "none";
             document.getElementById(id).style.display = "none";
         }
@@ -360,21 +348,26 @@
                 input.style.paddingTop = "10px";
                 input.style.paddingBottom = "10px";
                 input.placeholder = '';
+                var value = ''
                 if (e.which == 13) {
-                    like_chips.push(input.value);
+                    value = input.value;
                 }
                 if (e.type == 'click') {
-                    like_chips.push(e.target.innerHTML);
+                    value = e.target.innerHTML;
                 }
                 chips.style.maxWidth = "550px";
                 chips.style.paddingLeft = "5px";
 
-                if (e.type == 'click' || (e.which == 13 && input.value != '')) {
+                if ((e.type == 'click' || (e.which == 13 && input.value != '')) && !like_chips.includes(value)) {
+                    like_chips.push(value);
+                    if (like_chips.length > 5) {
+                        document.getElementById('like-input-inside').style.display = 'block';
+                    }
                     chips.appendChild(function () {
                         var _chip = document.createElement('div');
 
                         _chip.classList.add('chip');
-                        _chip.addEventListener('click', chipClickHandler);
+                        _chip.addEventListener('click', removeLike);
 
                         _chip.append(
                             (function () {
@@ -398,12 +391,14 @@
                                 return _chip_button;
                             })()
                         );
-                        console.log(_chip.style)
                         return _chip;
                     }());
                 }
                 else if (e.which == 13 && input.value == '') {
                     document.getElementsByClassName("like-chip-input")[0].placeholder = 'Likes';
+                }
+                else if (like_chips.includes(value)) {
+                    document.getElementsByClassName("like-suggest")[0].style.border = 'none';
                 }
                 input.value = '';
             }
@@ -429,20 +424,24 @@
                 input.style.paddingBottom = "10px";
                 input.placeholder = '';
                 if (e.which == 13) {
-                    dislike_chips.push(input.value);
+                    value = input.value;
                 }
                 if (e.type == 'click') {
-                    dislike_chips.push(e.target.innerHTML);
+                    value = e.target.innerHTML;
                 }
                 chips.style.maxWidth = "550px";
                 chips.style.paddingLeft = "5px";
 
-                if (e.type == 'click' || (e.which == 13 && input.value != '')) {
+                if ((e.type == 'click' || (e.which == 13 && input.value != '')) && !dislike_chips.includes(value)) {
+                    dislike_chips.push(value);
+                    if (dislike_chips.length > 5) {
+                        document.getElementById('dislike-input-inside').style.display = 'block';
+                    }
                     chips.appendChild(function () {
                         var _chip = document.createElement('div');
 
                         _chip.classList.add('chip');
-                        _chip.addEventListener('click', chipClickHandler);
+                        _chip.addEventListener('click', removeDislike);
 
                         _chip.append(
                             (function () {
@@ -473,22 +472,19 @@
                 else if (e.which == 13 && input.value == '') {
                     document.getElementsByClassName("dislike-chip-input")[0].placeholder = 'Dislikes';
                 }
+                else if (dislike_chips.includes(value)) {
+                    document.getElementsByClassName("dislike-suggest")[0].style.border = 'none';
+                }
                 input.value = '';
             }
         }
 
-        function chipClickHandler(event) {
+        function removeLike(event) {
             var ingr = (event.currentTarget).getElementsByClassName("chip--text")[0].innerHTML
             var like_index = like_chips.indexOf(ingr);
-            var dislike_index = dislike_chips.indexOf(ingr);
             if (like_index >= 0) {
                 like_chips.splice(like_index, 1);
                 var chips = document.getElementsByClassName("like-chips")[0];
-                chips.removeChild(event.currentTarget);
-            }
-            if (dislike_index >= 0) {
-                dislike_chips.splice(dislike_index, 1);
-                var chips = document.getElementsByClassName("dislike-chips")[0];
                 chips.removeChild(event.currentTarget);
             }
             if (like_chips.length == 0) {
@@ -496,6 +492,16 @@
                 input.style.paddingTop = "0px";
                 input.style.paddingBottom = "0px";
                 input.placeholder = 'Likes';
+            }
+        }
+
+        function removeDislike(event) {
+            var ingr = (event.currentTarget).getElementsByClassName("chip--text")[0].innerHTML
+            var dislike_index = dislike_chips.indexOf(ingr);
+            if (dislike_index >= 0) {
+                dislike_chips.splice(dislike_index, 1);
+                var chips = document.getElementsByClassName("dislike-chips")[0];
+                chips.removeChild(event.currentTarget);
             }
             if (dislike_chips.length == 0) {
                 var input = document.getElementsByClassName("dislike-chip-input")[0];

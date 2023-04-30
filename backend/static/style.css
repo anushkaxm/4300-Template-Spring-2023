@@ -56,8 +56,9 @@ h2 {
 /* form elements styling */
 .buttons {
     padding-top: 5px;
+    margin-left:5px;
     display: flex;
-    align-items: center;
+    align-self: center;
 }
 
 #Submit {
@@ -106,6 +107,8 @@ h2 {
 .extra-buttons {
     padding-top: 2px;
     display: flex;
+    align-self: center;
+    margin-left:5px;
 }
 
 .random-button {
@@ -173,7 +176,7 @@ h2 {
 /* end form elements styling */
 label {
     font-family: 'Source Sans Pro';
-    color: #752e3e;
+    color: #c16270;
     margin-top: 10px;
     padding-top: 2px;
     margin-left: 10px;
@@ -184,8 +187,9 @@ label {
 .container {
     display: block;
     position: relative;
-    padding-left: 19px;
-    padding-top: 2px;
+    padding-left: 22px;
+    padding-top: 1px;
+    margin-left:3px;
     cursor: pointer;
     font-size: 15px;
     -webkit-user-select: none;
@@ -206,23 +210,38 @@ label {
 /* Create a custom checkbox */
 .checkmark {
     position: absolute;
-    top: 0;
+    top: 2px;
+    right:5px;
     left: 0;
     height: 15px;
     width: 15px;
-    background-color: #c16270;
-    border: solid white;
+    background-color: #ece5df;
+    border: 1px solid #7c7b7c;
+    border-radius:5px;
 
 }
 
 /* On mouse-over, add a grey background color */
 .container:hover input~.checkmark {
+    border: none;
     background-color: #752e3e;
 }
 
 /* When the checkbox is checked, add a blue background */
 .container input:checked~.checkmark {
-    background-color: #752e3e;
+    background-color: #f1efea;
+}
+
+.container .checkmark:after {
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid #752e3e;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
@@ -237,18 +256,6 @@ label {
     display: block;
 }
 
-/* Style the checkmark/indicator */
-.container .checkmark:after {
-    left: 4px;
-    top: 1px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
-}
 
 .empty {
     height: 200px;
@@ -269,9 +276,8 @@ label {
 .form {
     display: flex;
     flex-direction: column;
-    align-items: center;
     border-radius: 20px;
-    padding: 20px;
+    padding: 23px;
     background-color: #f1efea;
     position: relative;
 }
@@ -279,7 +285,7 @@ label {
 .results-container {
     position: relative;
     align-items: center;
-    margin-top: 10px;
+    margin-top: 20px;
     padding-bottom: 30px;
     overflow-y: auto;
 }
@@ -488,8 +494,8 @@ label {
     border: 1px solid #7c7b7c;
     display: flex;
     align-items: center;
-    margin-top: 10px;
-    margin-bottom: 2px;
+    margin-top: 12px;
+    margin-bottom: 5px;
     padding: 12px;
     width: 600px;
     background-color: #ece5df;
@@ -511,6 +517,10 @@ label {
     font-family: 'Source Sans Pro';
     color: #666666;
     display: inline;
+}
+
+.input-inside{
+    display:flex;
 }
 
 /* dropdown code adapted from https://shorturl.at/oryKV */
@@ -541,9 +551,9 @@ label {
 
 /* gradient background code from https://codepen.io/P1N2O/pen/pyBNzX */
 html {
-    background: linear-gradient(-45deg, #e2b6b4, #d0b0ae, #c78986, #c9818b);
+    background: linear-gradient(-45deg, #c78986, #ca8c94, #e2b6b4, #d0b0ae );
     background-size: 400% 400%;
-    animation: gradient 15s ease infinite;
+    animation: gradient 25s ease infinite;
     height: 100vh;
 }
 
